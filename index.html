@@ -140,16 +140,16 @@
             width: 20px;
             height: 20px;
             right: -11px;
-            background-color: #ef4444;
+            background-color: #818cf8;
             top: 28px;
             border-radius: 50%;
             z-index: 1;
-            animation: heartbeat 1.2s ease-in-out infinite;
+            animation: heartbeat 1.5s ease-in-out infinite;
         }
          @keyframes heartbeat {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1.25); box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.7); }
+            50% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(129, 140, 248, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(129, 140, 248, 0); }
         }
         .timeline-container.right::after { left: -9px; }
         .timeline-container .content {
@@ -203,6 +203,18 @@
             left: -10px;
             border-width: 10px 10px 10px 0;
             border-right-color: rgba(45, 55, 72, 0.8);
+        }
+        
+        /* --- Skill Icon Animation --- */
+        @keyframes float {
+            0% { transform: translateY(0px) translateX(0px); }
+            25% { transform: translateY(-3px) translateX(2px); }
+            50% { transform: translateY(2px) translateX(-3px); }
+            75% { transform: translateY(-2px) translateX(3px); }
+            100% { transform: translateY(0px) translateX(0px); }
+        }
+        .skill-icon {
+            animation: float 6s ease-in-out infinite;
         }
 
         /* --- Tooltip Styles --- */
@@ -365,18 +377,18 @@
                 </div>
             </div>
             <div class="p-6 grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-6 overflow-y-auto">
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Laravel"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/353985/laravel.svg" class="w-8 h-8"></div><span class="text-sm">Laravel</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Livewire"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/373724/livewire.svg" class="w-8 h-8"></div><span class="text-sm">Livewire</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="MySQL"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/373848/mysql.svg" class="w-8 h-8"></div><span class="text-sm">MySQL</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="JavaScript"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/353925/javascript.svg" class="w-8 h-8"></div><span class="text-sm">JavaScript</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Tailwind CSS"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/374118/tailwind.svg" class="w-8 h-8"></div><span class="text-sm">Tailwind</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="React"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/452092/react.svg" class="w-8 h-8"></div><span class="text-sm">React</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Git"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/452210/git.svg" class="w-8 h-8"></div><span class="text-sm">Git</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Security & VAPT"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="shield" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">Security</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="REST APIs"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="git-pull-request" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">REST APIs</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Node.js"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/452075/node-js.svg" class="w-8 h-8"></div><span class="text-sm">Node.js</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Automation"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="play-circle" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">Automation</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="SOLID Principles"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="layers" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">SOLID</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Laravel" style="animation-delay: -0.5s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/353985/laravel.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">Laravel</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Livewire" style="animation-delay: -1.2s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://laravel-livewire.com/img/twitter.png" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">Livewire</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="MySQL" style="animation-delay: -2.5s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/373848/mysql.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">MySQL</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="JavaScript" style="animation-delay: -1.8s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/353925/javascript.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">JavaScript</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Tailwind CSS" style="animation-delay: -3.1s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/374118/tailwind.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">Tailwind</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="React" style="animation-delay: -0.8s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/452092/react.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">React</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Git" style="animation-delay: -2.1s;"><div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/503359/github.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">Github</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Security & VAPT" style="animation-delay: -1.5s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="shield" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">Security</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="REST APIs" style="animation-delay: -2.8s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="git-pull-request" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">REST APIs</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Node.js" style="animation-delay: -0.2s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/452075/node-js.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">Node.js</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Automation" style="animation-delay: -1.0s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="play-circle" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">Automation</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="SOLID Principles" style="animation-delay: -3.5s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="layers" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">SOLID</span></div>
             </div>
         </div>
 
@@ -450,8 +462,8 @@
         let highestZ = 100;
         let matrixInterval;
         const projectsData = [
-            { id: 'p1', name: 'Team Meeting Manager', description: 'Real-time Chrome extension with WebSocket + Google Meet API for admin scheduling and live status updates.', tech: ['Chrome Extension', 'WebSocket', 'Google Meet API'], image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=2574&auto=format&fit=crop' },
-            { id: 'p2', name: 'Secure Gmail Service', description: 'Secure Gmail Chrome extension with disposable encrypted emails via Gmail API and a Laravel backend.', tech: ['Chrome Extension', 'Encryption', 'Gmail API'], image: 'https://images.unsplash.com/photo-1558021212-51b6ec1e3625?q=80&w=2557&auto=format&fit=crop' },
+            { id: 'p1', name: 'Team Meeting Manager - Chrome Extension', description: 'Real-time Chrome extension with WebSocket + Google Meet API for admin scheduling and live status updates.', tech: ['Chrome Extension', 'WebSocket', 'Google Meet API'], image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=2574&auto=format&fit=crop' },
+            { id: 'p2', name: 'Secure Gmail Service - Chrome Extension', description: 'Secure Gmail Chrome extension with disposable encrypted emails via Gmail API and a Laravel backend.', tech: ['Chrome Extension', 'Encryption', 'Gmail API'], image: 'https://images.unsplash.com/photo-1558021212-51b6ec1e3625?q=80&w=2557&auto=format&fit=crop' },
             { id: 'p3', name: 'Global reCAPTCHA Package', description: 'Open-source Laravel/PHP package adding Google reCAPTCHA across all requests with middleware and service provider binding.', tech: ['Laravel', 'PHP', 'Open Source'], image: 'https://images.unsplash.com/photo-1516116216624-53e69730b9dd?q=80&w=2670&auto=format&fit=crop' },
             { id: 'p4', name: 'Enterprise Store Mgmt', description: 'Complex enterprise app for a dress designing company with a scalable DB, Livewire, Algolia, and queue workers.', tech: ['Enterprise', 'Livewire', 'Algolia'], image: 'https://images.unsplash.com/photo-1524234103236-90212237063d?q=80&w=2670&auto=format&fit=crop' },
             { id: 'p5', name: 'Autonomous Deployment', description: 'Automated CI/CD from GitHub PRs to Laravel Forge with live preview links.', tech: ['CI/CD', 'GitHub API', 'Laravel Forge'], image: 'https://images.unsplash.com/photo-1580894742597-87bc8789db3d?q=80&w=2670&auto=format&fit=crop' },
@@ -773,7 +785,7 @@
             contentArea.innerHTML = `
                 <div class="flex flex-col md:flex-row gap-8 p-6 h-full">
                     <div class="md:w-1/2 flex-shrink-0">
-                        <img src="${project.image}" alt="${project.name}" class="w-full h-auto object-cover rounded-lg shadow-lg">
+                        <img src="${project.image}" alt="${project.name}" class="w-full h-auto object-cover rounded-lg shadow-lg" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1F2937/FFFFFF?text=Image+Unavailable';">
                     </div>
                     <div class="md:w-1/2 flex flex-col">
                         <h2 class="text-3xl font-bold mb-4">${project.name}</h2>
@@ -951,3 +963,4 @@
     </script>
 </body>
 </html>
+
