@@ -1,31 +1,953 @@
- <!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%- metaTitle %></title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yash Nayak's Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            color: #E5E7EB;
+            background-color: #111827;
+        }
+        
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6B7280; }
 
-    <meta property="title" content="<%- metaTitle %>" />
-    <meta name="description" content="<%- metaDescription %>" />
+        /* --- Creative Backgrounds --- */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            display: none; /* Hidden by default */
+        }
 
-    <meta itemprop="name" content="<%- metaTitle %>" />
-    <meta itemprop="description" content="<%- metaDescription %>" />
-    <meta itemprop="image" content="<%- metaImageURL %>" />
+        .blob-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            transition: opacity 0.5s ease;
+        }
 
-    <meta property="og:title" content="<%- metaTitle %>" />
-    <meta property="og:description" content="<%- metaDescription %>" />
-    <meta property="og:image" content="<%- metaImageURL %>" />
-    <meta property="og:image:secure_url" content="<%- metaImageURL %>" />
+        .blob {
+            position: absolute; border-radius: 50%;
+            filter: blur(100px); opacity: 0.6;
+        }
+        .blob1 { width: 400px; height: 400px; background: #e73c7e; top: -50px; left: -50px; animation: move 25s infinite alternate; }
+        .blob2 { width: 300px; height: 300px; background: #23a6d5; bottom: -50px; right: -50px; animation: move 20s infinite alternate-reverse; }
+        .blob3 { width: 250px; height: 250px; background: #ee7752; bottom: 100px; left: 200px; animation: move 30s infinite alternate; }
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="<%- metaTitle %>" />
-    <meta name="twitter:description" content="<%- metaDescription %>" />
-    <meta name="twitter:image" content="<%- metaImageURL %>" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+        @keyframes move {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(40vw, 50vh) scale(1.2) rotate(180deg); }
+        }
+
+        /* --- Window Styles --- */
+        .window {
+            background-color: rgba(23, 30, 48, 0.4);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            display: flex; flex-direction: column;
+            opacity: 0; /* Start hidden for animation */
+            transform-origin: center center;
+        }
+
+        .window-header {
+            background-color: rgba(0, 0, 0, 0.2); padding: 10px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; justify-content: space-between; align-items: center;
+            user-select: none;
+            flex-shrink: 0;
+        }
+        .window-header.draggable { cursor: grab; }
+        .window-header.dragging { cursor: grabbing; }
+        .window-title { display: flex; align-items: center; gap: 8px; }
+
+        .window-controls { display: flex; align-items: center; gap: 8px; }
+        .window-btn {
+            width: 16px; height: 16px; border-radius: 50%; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.2s;
+            position: relative; /* For tooltip */
+        }
+        .close-btn { background-color: #ff5f56; }
+        .close-btn:hover { background-color: #e0443e; }
+        .minimize-btn { background-color: #ffbd2e; }
+        .minimize-btn:hover { background-color: #dea123; }
+        .fullscreen-btn { background-color: #27c93f; }
+        .fullscreen-btn:hover { background-color: #1da92e; }
+        .window-btn svg { opacity: 1; transition: opacity 0.2s; width: 8px; height: 8px; stroke: #333; stroke-width: 2.5; }
+
+
+        /* Window Resizers */
+        .resizer { position: absolute; width: 10px; height: 10px; background: transparent; z-index: 10; }
+        .resizer.top-left { top: -5px; left: -5px; cursor: nwse-resize; }
+        .resizer.top-right { top: -5px; right: -5px; cursor: nesw-resize; }
+        .resizer.bottom-left { bottom: -5px; left: -5px; cursor: nesw-resize; }
+        .resizer.bottom-right { bottom: -5px; right: -5px; cursor: nwse-resize; }
+        .resizer.top { top: -5px; left: 5px; right: 5px; height: 10px; cursor: ns-resize; }
+        .resizer.bottom { bottom: -5px; left: 5px; right: 5px; height: 10px; cursor: ns-resize; }
+        .resizer.left { top: 5px; bottom: 5px; left: -5px; width: 10px; cursor: ew-resize; }
+        .resizer.right { top: 5px; bottom: 5px; right: -5px; width: 10px; cursor: ew-resize; }
+
+        /* --- Experience Timeline Styles --- */
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            background-color: #22d3ee;
+            box-shadow: 0 0 5px #22d3ee, 0 0 10px #22d3ee;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -1px;
+        }
+        .timeline-container {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+        .timeline-container.left { left: 0; }
+        .timeline-container.right { left: 50%; }
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -11px;
+            background-color: #ef4444;
+            top: 28px;
+            border-radius: 50%;
+            z-index: 1;
+            animation: heartbeat 1.2s ease-in-out infinite;
+        }
+         @keyframes heartbeat {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.25); box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .timeline-container.right::after { left: -9px; }
+        .timeline-container .content {
+            padding: 20px 30px;
+            background-color: rgba(45, 55, 72, 0.8);
+            position: relative;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        .timeline-container .content::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 28px;
+            width: 0;
+            z-index: 1;
+            border: medium solid transparent;
+        }
+        .timeline-container.left .content::before {
+            right: -10px;
+            border-width: 10px 0 10px 10px;
+            border-left-color: rgba(45, 55, 72, 0.8);
+        }
+         .timeline-container.right .content::before {
+            left: -10px;
+            border-width: 10px 10px 10px 0;
+            border-right-color: rgba(45, 55, 72, 0.8);
+        }
+        .timeline-container.visible .content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Mobile view for timeline, controlled by JS */
+        .timeline.mobile-view::after { left: 31px; }
+        .timeline.mobile-view .timeline-container {
+            width: 100%;
+            padding-left: 70px;
+            padding-right: 25px;
+        }
+        .timeline.mobile-view .timeline-container.left, .timeline.mobile-view .timeline-container.right {
+            left: 0%;
+        }
+        .timeline.mobile-view .timeline-container.left::after, .timeline.mobile-view .timeline-container.right::after {
+            left: 20px;
+        }
+        .timeline.mobile-view .timeline-container.left .content::before, .timeline.mobile-view .timeline-container.right .content::before {
+            left: -10px;
+            border-width: 10px 10px 10px 0;
+            border-right-color: rgba(45, 55, 72, 0.8);
+        }
+
+        /* --- Tooltip Styles --- */
+        #tooltip {
+            position: fixed;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        /* --- Windows 11 Taskbar --- */
+        #taskbar {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
+            padding: 8px; display: flex; align-items: center;
+            z-index: 1000; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .taskbar-main-icons { display: flex; gap: 8px; }
+        .taskbar-separator { width: 1px; height: 24px; background-color: rgba(255, 255, 255, 0.1); margin: 0 8px; }
+        
+        .taskbar-icon, #theme-toggle {
+            width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+            border-radius: 6px; cursor: pointer; color: #E5E7EB;
+            transition: all 0.2s ease; position: relative; background: none; border: none;
+        }
+        .taskbar-icon:hover, #theme-toggle:hover { background-color: rgba(255, 255, 255, 0.1); transform: translateY(-4px); }
+        .taskbar-icon.active::after {
+            content: ''; position: absolute; bottom: 2px; left: 50%;
+            transform: translateX(-50%); width: 20px; height: 3px;
+            background-color: #a78bfa; border-radius: 2px;
+        }
+        
+        .start-button {
+            width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+            border-radius: 6px; cursor: pointer; color: #E5E7EB;
+            transition: all 0.2s ease; background-color: #4f46e5;
+        }
+        .start-button:hover { background-color: #6366f1; transform: scale(1.1); }
+
+        .start-menu {
+            position: absolute; bottom: calc(100% + 10px); left: 0;
+            background-color: rgba(42, 53, 75, 0.8); backdrop-filter: blur(20px);
+            border-radius: 8px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            padding: 8px; min-w-[220px]; transform-origin: bottom left;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* --- Project Finder Styles --- */
+        .finder-nav { display: flex; align-items: center; padding: 4px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; }
+        .finder-btn { background: none; border: none; padding: 4px; border-radius: 4px; color: #E5E7EB; }
+        .finder-btn:not(:disabled):hover { background-color: rgba(255, 255, 255, 0.1); }
+        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 20px; }
+        .folder-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 8px; border-radius: 6px; transition: background-color 0.2s ease; }
+        .folder-item:hover { background-color: rgba(99, 102, 241, 0.2); }
+        .folder-item i { width: 64px; height: 64px; color: #818cf8; }
+        .folder-item span { font-size: 12px; margin-top: 8px; text-align: center; word-break: break-word; }
+
+        /* --- Neon/Hacker Theme --- */
+        body.hacker-mode { background: #000; font-family: 'Roboto Mono', monospace; }
+        .hacker-mode .blob-container { opacity: 0; }
+        .hacker-mode #matrix-canvas { display: block; }
+        .hacker-mode .window { background-color: rgba(0, 20, 0, 0.5) !important; border: 1px solid #0f0; box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 15px rgba(0, 255, 0, 0.2); }
+        .hacker-mode .window-header, .hacker-mode .finder-nav { border-bottom: 1px solid #0f0; }
+        .hacker-mode .window, .hacker-mode #taskbar, .hacker-mode .start-menu, .hacker-mode .taskbar-icon, .hacker-mode .start-button, .hacker-mode #theme-toggle, .hacker-mode .finder-btn { color: #0f0; }
+        .hacker-mode #taskbar { background: rgba(0, 20, 0, 0.5); border-color: #0f0; }
+        .hacker-mode .start-menu { background: rgba(0, 20, 0, 0.8); }
+        .hacker-mode .start-button { background-color: #084c08; text-shadow: 0 0 5px #0f0;}
+        .hacker-mode .taskbar-icon:hover, .hacker-mode .start-menu-item:hover, .hacker-mode #theme-toggle:hover, .hacker-mode .finder-btn:hover { background: rgba(0, 255, 0, 0.1); }
+        .hacker-mode .taskbar-icon.active::after { background-color: #0f0; box-shadow: 0 0 5px #0f0; }
+        .hacker-mode .text-indigo-300 { color: #39ff14; }
+        .hacker-mode .project-card, .hacker-mode .skill-icon div, .hacker-mode input, .hacker-mode textarea { background: rgba(0, 255, 0, 0.05) !important; border: 1px solid rgba(0, 255, 0, 0.3) !important; }
+        .hacker-mode button { background-color: #084c08 !important; }
+        .hacker-mode button:hover { background-color: #0f0 !important; color: #000 !important; }
+        .hacker-mode .timeline::after { box-shadow: 0 0 5px #0f0, 0 0 10px #0f0; background: #0f0; }
+        .hacker-mode .timeline-container::after { border-color: #0f0; background-color: #0f0; }
+
+    </style>
+</head>
+<body class="relative overflow-hidden">
+    
+    <div class="blob-container">
+        <div class="blob blob1"></div>
+        <div class="blob blob2"></div>
+        <div class="blob blob3"></div>
+    </div>
+    <canvas id="matrix-canvas"></canvas>
+    
+    <!-- Tooltip Element -->
+    <div id="tooltip"></div>
+
+    <!-- Windows -->
+    <div id="desktop-area">
+        <div id="about-window" class="window hidden">
+            <div class="resizer top-left"></div><div class="resizer top-right"></div><div class="resizer bottom-left"></div><div class="resizer bottom-right"></div><div class="resizer top"></div><div class="resizer bottom"></div><div class="resizer left"></div><div class="resizer right"></div>
+            <div class="window-header">
+                <div class="window-title"><i data-feather="user"></i><span>About Me</span></div>
+                <div class="window-controls">
+                    <button class="window-btn minimize-btn" data-tooltip="Minimize" data-window="about-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,14H4V10H20"/></svg></button>
+                    <button class="window-btn fullscreen-btn" data-tooltip="Maximize" data-window="about-window"><svg viewBox="0 0 10 10"><path fill="currentColor" d="M0,0v10h10V0H0z M9,9H1V1H9V9z"/></svg></button>
+                    <button class="window-btn close-btn" data-tooltip="Close" data-window="about-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg></button>
+                </div>
+            </div>
+            <div class="p-6 flex flex-col md:flex-row items-center flex-grow overflow-y-auto">
+                <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-indigo-400 mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+                    <img src="https://placehold.co/128x128/4F46E5/FFFFFF?text=YN" alt="Profile" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">Yash Nayak</h2>
+                    <h3 class="text-xl text-indigo-300 mb-4">Full-Stack Software Engineer</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Security-focused Full-Stack Software Engineer with strong expertise in backend development, scalable SaaS platforms, and secure system architecture. Experienced in Laravel, Livewire, Tailwind, MySQL, and RESTful APIs with proven ability to build real-time, automation-driven applications.
+                    </p>
+                     <div class="flex space-x-4 mt-4">
+                        <a href="https://linkedin.com/in/yash-nayak-8537141a1" target="_blank" class="text-gray-400 hover:text-white" data-tooltip="LinkedIn"><i data-feather="linkedin"></i></a>
+                        <a href="https://github.com/yash22nayak" target="_blank" class="text-gray-400 hover:text-white" data-tooltip="GitHub"><i data-feather="github"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="projects-window" class="window hidden">
+            <div class="resizer top-left"></div><div class="resizer top-right"></div><div class="resizer bottom-left"></div><div class="resizer bottom-right"></div><div class="resizer top"></div><div class="resizer bottom"></div><div class="resizer left"></div><div class="resizer right"></div>
+             <div class="window-header">
+                <div class="window-title"><i data-feather="folder"></i><span>Projects</span></div>
+                <div class="window-controls">
+                    <button class="window-btn minimize-btn" data-tooltip="Minimize" data-window="projects-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,14H4V10H20"/></svg></button>
+                    <button class="window-btn fullscreen-btn" data-tooltip="Maximize" data-window="projects-window"><svg viewBox="0 0 10 10"><path fill="currentColor" d="M0,0v10h10V0H0z M9,9H1V1H9V9z"/></svg></button>
+                    <button class="window-btn close-btn" data-tooltip="Close" data-window="projects-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg></button>
+                </div>
+            </div>
+            <div class="flex-grow flex flex-col h-full bg-slate-800/20 min-h-0">
+                <div class="finder-nav">
+                    <button id="project-back-btn" class="finder-btn disabled:opacity-50" disabled data-tooltip="Back"><i data-feather="arrow-left"></i></button>
+                    <button id="project-forward-btn" class="finder-btn disabled:opacity-50" disabled data-tooltip="Forward"><i data-feather="arrow-right"></i></button>
+                    <div class="ml-4 font-semibold text-sm" id="finder-path"></div>
+                </div>
+                <div id="finder-content" class="flex-grow overflow-y-auto">
+                    <!-- Project content rendered by JS -->
+                </div>
+            </div>
+        </div>
+
+         <div id="skills-window" class="window hidden">
+            <div class="resizer top-left"></div><div class="resizer top-right"></div><div class="resizer bottom-left"></div><div class="resizer bottom-right"></div><div class="resizer top"></div><div class="resizer bottom"></div><div class="resizer left"></div><div class="resizer right"></div>
+            <div class="window-header">
+                <div class="window-title"><i data-feather="award"></i><span>My Skills</span></div>
+                <div class="window-controls">
+                    <button class="window-btn minimize-btn" data-tooltip="Minimize" data-window="skills-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,14H4V10H20"/></svg></button>
+                    <button class="window-btn fullscreen-btn" data-tooltip="Maximize" data-window="skills-window"><svg viewBox="0 0 10 10"><path fill="currentColor" d="M0,0v10h10V0H0z M9,9H1V1H9V9z"/></svg></button>
+                    <button class="window-btn close-btn" data-tooltip="Close" data-window="skills-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg></button>
+                </div>
+            </div>
+            <div class="p-6 grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-6 overflow-y-auto">
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Laravel"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/353985/laravel.svg" class="w-8 h-8"></div><span class="text-sm">Laravel</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Livewire"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/373724/livewire.svg" class="w-8 h-8"></div><span class="text-sm">Livewire</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="MySQL"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/373848/mysql.svg" class="w-8 h-8"></div><span class="text-sm">MySQL</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="JavaScript"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/353925/javascript.svg" class="w-8 h-8"></div><span class="text-sm">JavaScript</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Tailwind CSS"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/374118/tailwind.svg" class="w-8 h-8"></div><span class="text-sm">Tailwind</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="React"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/452092/react.svg" class="w-8 h-8"></div><span class="text-sm">React</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Git"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/452210/git.svg" class="w-8 h-8"></div><span class="text-sm">Git</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Security & VAPT"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="shield" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">Security</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="REST APIs"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="git-pull-request" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">REST APIs</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Node.js"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/452075/node-js.svg" class="w-8 h-8"></div><span class="text-sm">Node.js</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="Automation"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="play-circle" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">Automation</span></div>
+                 <div class="skill-icon flex flex-col items-center" data-tooltip="SOLID Principles"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="layers" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">SOLID</span></div>
+            </div>
+        </div>
+
+        <div id="experience-window" class="window hidden">
+            <div class="resizer top-left"></div><div class="resizer top-right"></div><div class="resizer bottom-left"></div><div class="resizer bottom-right"></div><div class="resizer top"></div><div class="resizer bottom"></div><div class="resizer left"></div><div class="resizer right"></div>
+            <div class="window-header">
+                <div class="window-title"><i data-feather="briefcase"></i><span>Experience</span></div>
+                <div class="window-controls">
+                    <button class="window-btn minimize-btn" data-tooltip="Minimize" data-window="experience-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,14H4V10H20"/></svg></button>
+                    <button class="window-btn fullscreen-btn" data-tooltip="Maximize" data-window="experience-window"><svg viewBox="0 0 10 10"><path fill="currentColor" d="M0,0v10h10V0H0z M9,9H1V1H9V9z"/></svg></button>
+                    <button class="window-btn close-btn" data-tooltip="Close" data-window="experience-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg></button>
+                </div>
+            </div>
+            <div id="experience-content" class="p-10 overflow-y-auto">
+                <div class="timeline">
+                    <!-- Experience items will be injected here by JS -->
+                </div>
+            </div>
+        </div>
+
+
+        <div id="contact-window" class="window hidden">
+             <div class="resizer top-left"></div><div class="resizer top-right"></div><div class="resizer bottom-left"></div><div class="resizer bottom-right"></div><div class="resizer top"></div><div class="resizer bottom"></div><div class="resizer left"></div><div class="resizer right"></div>
+             <div class="window-header">
+                <div class="window-title"><i data-feather="mail"></i><span>Contact Me</span></div>
+                <div class="window-controls">
+                    <button class="window-btn minimize-btn" data-tooltip="Minimize" data-window="contact-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,14H4V10H20"/></svg></button>
+                    <button class="window-btn fullscreen-btn" data-tooltip="Maximize" data-window="contact-window"><svg viewBox="0 0 10 10"><path fill="currentColor" d="M0,0v10h10V0H0z M9,9H1V1H9V9z"/></svg></button>
+                    <button class="window-btn close-btn" data-tooltip="Close" data-window="contact-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg></button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <form action="mailto:nayakyash2209@gmail.com" method="post" enctype="text/plain" class="space-y-4">
+                    <div><label class="block text-sm font-medium mb-1">Your Name</label><input type="text" name="name" class="w-full px-3 py-2 bg-slate-800/50 border border-gray-700 rounded focus:outline-none focus:border-indigo-500"></div>
+                    <div><label class="block text-sm font-medium mb-1">Your Email</label><input type="email" name="email" class="w-full px-3 py-2 bg-slate-800/50 border border-gray-700 rounded focus:outline-none focus:border-indigo-500"></div>
+                    <div><label class="block text-sm font-medium mb-1">Message</label><textarea name="message" rows="4" class="w-full px-3 py-2 bg-slate-800/50 border border-gray-700 rounded focus:outline-none focus:border-indigo-500"></textarea></div>
+                    <button type="submit" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md transition duration-300 flex items-center justify-center"><i data-feather="send" class="mr-2 w-4 h-4"></i> Send Email</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Taskbar -->
+    <div id="taskbar">
+        <div class="relative">
+            <div class="start-button" data-tooltip="Start Menu (Ctrl + Win)"><i data-feather="grid" class="w-5 h-5"></i></div>
+            <div class="start-menu hidden">
+                <div class="start-menu-item p-2 rounded-md hover:bg-white/10 transition flex items-center cursor-pointer" data-window="about-window"><i data-feather="user" class="w-5 h-5 mr-3"></i><span>About</span></div>
+                <div class="start-menu-item p-2 rounded-md hover:bg-white/10 transition flex items-center cursor-pointer" data-window="experience-window"><i data-feather="briefcase" class="w-5 h-5 mr-3"></i><span>Experience</span></div>
+                <div class="start-menu-item p-2 rounded-md hover:bg-white/10 transition flex items-center cursor-pointer" data-window="projects-window"><i data-feather="folder" class="w-5 h-5 mr-3"></i><span>Projects</span></div>
+                <div class="start-menu-item p-2 rounded-md hover:bg-white/10 transition flex items-center cursor-pointer" data-window="skills-window"><i data-feather="award" class="w-5 h-5 mr-3"></i><span>Skills</span></div>
+                <div class="start-menu-item p-2 rounded-md hover:bg-white/10 transition flex items-center cursor-pointer" data-window="contact-window"><i data-feather="mail" class="w-5 h-5 mr-3"></i><span>Contact</span></div>
+            </div>
+        </div>
+        <div class="taskbar-main-icons">
+            <div class="taskbar-icon" data-window="about-window" data-tooltip="About Me"><i data-feather="user"></i></div>
+            <div class="taskbar-icon" data-window="experience-window" data-tooltip="Experience"><i data-feather="briefcase"></i></div>
+            <div class="taskbar-icon" data-window="projects-window" data-tooltip="My Projects"><i data-feather="folder"></i></div>
+            <div class="taskbar-icon" data-window="skills-window" data-tooltip="My Skills"><i data-feather="award"></i></div>
+            <div class="taskbar-icon" data-window="contact-window" data-tooltip="Contact Me"><i data-feather="mail"></i></div>
+        </div>
+        <div class="flex-grow"></div>
+        <div class="taskbar-separator"></div>
+        <button id="theme-toggle" data-tooltip="Toggle Theme"><i data-feather="terminal" class="w-5 h-5"></i></button>
+    </div>
+
+    <script>
+        feather.replace();
+        
+        // --- Global State ---
+        let highestZ = 100;
+        let matrixInterval;
+        const projectsData = [
+            { id: 'p1', name: 'Team Meeting Manager', description: 'Real-time Chrome extension with WebSocket + Google Meet API for admin scheduling and live status updates.', tech: ['Chrome Extension', 'WebSocket', 'Google Meet API'], image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=2574&auto=format&fit=crop' },
+            { id: 'p2', name: 'Secure Gmail Service', description: 'Secure Gmail Chrome extension with disposable encrypted emails via Gmail API and a Laravel backend.', tech: ['Chrome Extension', 'Encryption', 'Gmail API'], image: 'https://images.unsplash.com/photo-1558021212-51b6ec1e3625?q=80&w=2557&auto=format&fit=crop' },
+            { id: 'p3', name: 'Global reCAPTCHA Package', description: 'Open-source Laravel/PHP package adding Google reCAPTCHA across all requests with middleware and service provider binding.', tech: ['Laravel', 'PHP', 'Open Source'], image: 'https://images.unsplash.com/photo-1516116216624-53e69730b9dd?q=80&w=2670&auto=format&fit=crop' },
+            { id: 'p4', name: 'Enterprise Store Mgmt', description: 'Complex enterprise app for a dress designing company with a scalable DB, Livewire, Algolia, and queue workers.', tech: ['Enterprise', 'Livewire', 'Algolia'], image: 'https://images.unsplash.com/photo-1524234103236-90212237063d?q=80&w=2670&auto=format&fit=crop' },
+            { id: 'p5', name: 'Autonomous Deployment', description: 'Automated CI/CD from GitHub PRs to Laravel Forge with live preview links.', tech: ['CI/CD', 'GitHub API', 'Laravel Forge'], image: 'https://images.unsplash.com/photo-1580894742597-87bc8789db3d?q=80&w=2670&auto=format&fit=crop' },
+            { id: 'p6', name: 'Stock Alert Platform', description: 'Built predictive stock alert system with Python ML models + Stripe for subscriptions, role-based access, and real-time notifications.', tech: ['Python', 'Machine Learning', 'Stripe'], image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=2670&auto=format&fit=crop' },
+            { id: 'p7', name: 'LMS Platform', description: 'Complete LMS backend with payments (Razorpay), live sessions, assignment tracking, and secure APIs.', tech: ['LMS', 'Razorpay', 'API'], image: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=2574&auto=format&fit=crop' },
+        ];
+        const experienceData = [
+            {
+                company: 'WebMavens',
+                role: 'Laravel Developer',
+                date: 'July 2024 - Current',
+                points: [
+                    'Built secure backend features and integrated third-party APIs.',
+                    'Managed real-time workflows using Laravel\'s asynchronous capabilities.',
+                    'Contributed to advanced projects with complex architecture and services.'
+                ]
+            },
+            {
+                company: 'Freelancing',
+                role: 'Full-Stack Developer',
+                date: 'Nov 2023 - June 2024',
+                points: [
+                    'Delivered CMS-based admin panels and CRUD systems.',
+                    'Developed user management features and optimized workflows.'
+                ]
+            },
+            {
+                company: 'TechDefence Labs',
+                role: 'Security Analyst (VAPT)',
+                date: 'Nov 2023 - May 2024',
+                points: [
+                    'Conducted vulnerability assessments and penetration testing.',
+                    'Used tools like Nessus, Nmap, and Burp Suite to identify risks.',
+                    'Delivered detailed remediation guidelines to client teams.'
+                ]
+            },
+            {
+                company: 'Glorywebs Creatives',
+                role: 'Laravel Developer',
+                date: 'Jan 2023 - Nov 2023',
+                points: [
+                    'Built and optimized backend systems for custom applications.',
+                    'Focused on database structure, performance tuning, and security.'
+                ]
+            }
+        ];
+        let projectHistory = [];
+        let projectHistoryIndex = -1;
+
+        // --- Window Management ---
+        const allIcons = document.querySelectorAll('.taskbar-icon, .start-menu-item');
+        allIcons.forEach(icon => {
+            icon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const windowId = this.getAttribute('data-window');
+                openWindow(windowId);
+                toggleStartMenu(false);
+            });
+        });
+
+        function openWindow(windowId) {
+            const windowElement = document.getElementById(windowId);
+            if (!windowElement) return;
+
+            highestZ++;
+            windowElement.style.zIndex = highestZ;
+            
+            if (windowElement.classList.contains('hidden')) {
+                windowElement.classList.remove('hidden');
+
+                if (window.innerWidth <= 768) {
+                    setToFullscreen(windowElement);
+                } else {
+                    setToRestored(windowElement);
+                }
+
+                anime({ targets: windowElement, opacity: [0, 1], scale: [0.98, 1], duration: 300, easing: 'easeOutCubic' });
+                
+                if (windowId === 'projects-window' && projectHistory.length === 0) {
+                    navigateToProjectView({ view: 'list' });
+                }
+                if (windowId === 'experience-window') {
+                    renderExperienceTimeline();
+                     if (!windowElement.dataset.observed) { 
+                        const timeline = windowElement.querySelector('.timeline');
+                        const experienceObserver = new ResizeObserver(entries => {
+                            for (const entry of entries) {
+                                if (entry.contentRect.width < 640) {
+                                    timeline.classList.add('mobile-view');
+                                } else {
+                                    timeline.classList.remove('mobile-view');
+                                }
+                            }
+                        });
+                        experienceObserver.observe(windowElement);
+                        windowElement.dataset.observed = 'true';
+                    }
+                }
+            }
+            updateActiveTaskbarIcon(windowId);
+        }
+
+        document.querySelectorAll('.window').forEach(windowEl => {
+             windowEl.addEventListener('mousedown', () => {
+                highestZ++;
+                windowEl.style.zIndex = highestZ;
+            });
+        });
+
+        document.querySelectorAll('.window-btn').forEach(btn => {
+            const windowId = btn.getAttribute('data-window');
+            const windowElement = document.getElementById(windowId);
+
+            if (btn.classList.contains('close-btn')) {
+                btn.addEventListener('click', () => {
+                    anime({
+                        targets: windowElement, opacity: 0, scale: 0.98, duration: 200, easing: 'easeInCubic',
+                        complete: () => {
+                            windowElement.classList.add('hidden');
+                            document.querySelector(`.taskbar-icon[data-window="${windowId}"]`).classList.remove('active');
+                        }
+                    });
+                });
+            } else if (btn.classList.contains('minimize-btn')) {
+                 btn.addEventListener('click', () => {
+                    windowElement.classList.add('hidden');
+                    document.querySelector(`.taskbar-icon[data-window="${windowId}"]`).classList.remove('active');
+                 });
+            } else if (btn.classList.contains('fullscreen-btn')) {
+                 btn.addEventListener('click', () => toggleWindowSize(windowElement));
+            }
+        });
+
+        function setToFullscreen(el) {
+            el.style.transition = 'width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease';
+            el.style.width = '100vw';
+            el.style.height = `calc(100vh - 80px)`;
+            el.style.top = '0';
+            el.style.left = '0';
+            el.dataset.isMaximized = 'true';
+            el.querySelector('.window-header').classList.remove('draggable');
+            setTimeout(() => el.style.transition = '', 300);
+        }
+
+        function setToRestored(el) {
+            el.style.transition = 'width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease';
+            el.style.width = '70vw';
+            el.style.height = '75vh';
+            el.style.top = '10vh';
+            el.style.left = '15vw';
+            el.dataset.isMaximized = 'false';
+            el.querySelector('.window-header').classList.add('draggable');
+            setTimeout(() => el.style.transition = '', 300);
+        }
+
+        function toggleWindowSize(el) {
+            if (el.dataset.isMaximized === 'true') {
+                setToRestored(el);
+            } else {
+                setToFullscreen(el);
+            }
+        }
+
+        function updateActiveTaskbarIcon(windowId) {
+            document.querySelectorAll('.taskbar-icon').forEach(icon => {
+                icon.classList.toggle('active', icon.getAttribute('data-window') === windowId);
+            });
+        }
+        
+        document.querySelectorAll('.window').forEach(windowEl => {
+            makeDraggable(windowEl);
+            makeResizable(windowEl);
+        });
+        
+        function makeDraggable(element) {
+            const header = element.querySelector('.window-header');
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+            header.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                if (!header.classList.contains('draggable') || e.target.closest('.window-btn') || e.target.classList.contains('resizer')) return;
+                
+                e = e || window.event;
+                e.preventDefault();
+                
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                
+                highestZ++;
+                element.style.zIndex = highestZ;
+                header.classList.add('dragging');
+                document.body.style.userSelect = 'none';
+
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+                header.classList.remove('dragging');
+                document.body.style.userSelect = '';
+            }
+        }
+
+        function makeResizable(element) {
+            const resizers = element.querySelectorAll('.resizer');
+            const minimum_size = 300;
+            let original_width = 0;
+            let original_height = 0;
+            let original_x = 0;
+            let original_y = 0;
+            let original_mouse_x = 0;
+            let original_mouse_y = 0;
+
+            resizers.forEach(resizer => {
+                resizer.addEventListener('mousedown', function (e) {
+                    if (element.dataset.isMaximized === 'true') return;
+                    e.preventDefault();
+                    original_width = parseFloat(getComputedStyle(element, null).getPropertyValue('width').replace('px', ''));
+                    original_height = parseFloat(getComputedStyle(element, null).getPropertyValue('height').replace('px', ''));
+                    original_x = element.getBoundingClientRect().left;
+                    original_y = element.getBoundingClientRect().top;
+                    original_mouse_x = e.pageX;
+                    original_mouse_y = e.pageY;
+                    
+                    const currentResizer = this;
+                    
+                    const resize = (e) => {
+                        if (currentResizer.classList.contains('bottom-right')) {
+                            const width = original_width + (e.pageX - original_mouse_x);
+                            const height = original_height + (e.pageY - original_mouse_y);
+                            if (width > minimum_size) element.style.width = width + 'px';
+                            if (height > minimum_size) element.style.height = height + 'px';
+                        } else if (currentResizer.classList.contains('bottom-left')) {
+                            const height = original_height + (e.pageY - original_mouse_y);
+                            const width = original_width - (e.pageX - original_mouse_x);
+                            if (height > minimum_size) element.style.height = height + 'px';
+                            if (width > minimum_size) {
+                                element.style.width = width + 'px';
+                                element.style.left = original_x + (e.pageX - original_mouse_x) + 'px';
+                            }
+                        } else if (currentResizer.classList.contains('top-right')) {
+                            const width = original_width + (e.pageX - original_mouse_x);
+                            const height = original_height - (e.pageY - original_mouse_y);
+                            if (width > minimum_size) element.style.width = width + 'px';
+                            if (height > minimum_size) {
+                                element.style.height = height + 'px';
+                                element.style.top = original_y + (e.pageY - original_mouse_y) + 'px';
+                            }
+                        } else if (currentResizer.classList.contains('top-left')) {
+                            const width = original_width - (e.pageX - original_mouse_x);
+                            const height = original_height - (e.pageY - original_mouse_y);
+                            if (width > minimum_size) {
+                                element.style.width = width + 'px';
+                                element.style.left = original_x + (e.pageX - original_mouse_x) + 'px';
+                            }
+                            if (height > minimum_size) {
+                                element.style.height = height + 'px';
+                                element.style.top = original_y + (e.pageY - original_mouse_y) + 'px';
+                            }
+                        } else if (currentResizer.classList.contains('right')) {
+                            const width = original_width + (e.pageX - original_mouse_x);
+                            if (width > minimum_size) element.style.width = width + 'px';
+                        } else if (currentResizer.classList.contains('left')) {
+                            const width = original_width - (e.pageX - original_mouse_x);
+                            if (width > minimum_size) {
+                                element.style.width = width + 'px';
+                                element.style.left = original_x + (e.pageX - original_mouse_x) + 'px';
+                            }
+                        } else if (currentResizer.classList.contains('bottom')) {
+                            const height = original_height + (e.pageY - original_mouse_y);
+                            if (height > minimum_size) element.style.height = height + 'px';
+                        } else { // top
+                            const height = original_height - (e.pageY - original_mouse_y);
+                            if (height > minimum_size) {
+                                element.style.height = height + 'px';
+                                element.style.top = original_y + (e.pageY - original_mouse_y) + 'px';
+                            }
+                        }
+                    }
+
+                    const stopResize = () => {
+                        window.removeEventListener('mousemove', resize);
+                        window.removeEventListener('mouseup', stopResize);
+                    }
+
+                    window.addEventListener('mousemove', resize);
+                    window.addEventListener('mouseup', stopResize);
+                });
+            });
+        }
+
+        // --- Project Finder Logic ---
+        function renderProjectsList() {
+            const contentArea = document.getElementById('finder-content');
+            contentArea.innerHTML = `<div class="folder-grid p-4">${projectsData.map(p => `<div class="folder-item" data-project-id="${p.id}"><i data-feather="folder"></i><span>${p.name}</span></div>`).join('')}</div>`;
+            feather.replace();
+            document.querySelectorAll('.folder-item').forEach(folder => {
+                folder.addEventListener('click', () => navigateToProjectView({ view: 'details', projectId: folder.dataset.projectId }));
+            });
+        }
+        function renderProjectDetails(projectId) {
+            const project = projectsData.find(p => p.id === projectId);
+            if (!project) return;
+            const contentArea = document.getElementById('finder-content');
+            contentArea.innerHTML = `
+                <div class="flex flex-col md:flex-row gap-8 p-6 h-full">
+                    <div class="md:w-1/2 flex-shrink-0">
+                        <img src="${project.image}" alt="${project.name}" class="w-full h-auto object-cover rounded-lg shadow-lg">
+                    </div>
+                    <div class="md:w-1/2 flex flex-col">
+                        <h2 class="text-3xl font-bold mb-4">${project.name}</h2>
+                        <p class="mb-4">${project.description}</p>
+                        <div class="mt-auto pt-4">
+                            <h3 class="text-xl font-semibold mb-2">Technologies Used:</h3>
+                            <div class="flex flex-wrap gap-2">${project.tech.map(t => `<span class="bg-indigo-500/50 text-indigo-200 text-xs font-semibold px-2.5 py-0.5 rounded">${t}</span>`).join('')}</div>
+                        </div>
+                    </div>
+                </div>`;
+        }
+        function updateFinderNav() {
+            const backBtn = document.getElementById('project-back-btn');
+            const fwdBtn = document.getElementById('project-forward-btn');
+            const pathEl = document.getElementById('finder-path');
+
+            backBtn.disabled = projectHistoryIndex <= 0;
+            fwdBtn.disabled = projectHistoryIndex >= projectHistory.length - 1;
+            
+            const currentView = projectHistory[projectHistoryIndex];
+            if (currentView.view === 'list') {
+                pathEl.innerHTML = `<span>Projects</span>`;
+            } else {
+                const project = projectsData.find(p => p.id === currentView.projectId);
+                pathEl.innerHTML = `<a href="#" id="breadcrumb-projects" class="hover:underline cursor-pointer opacity-75">Projects</a> / <span>${project.name}</span>`;
+                
+                const breadcrumbLink = document.getElementById('breadcrumb-projects');
+                if (breadcrumbLink) {
+                    breadcrumbLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        navigateToProjectView({ view: 'list' });
+                    });
+                }
+            }
+        }
+        function navigateToProjectView(state) {
+            if (projectHistoryIndex < projectHistory.length - 1) {
+                projectHistory = projectHistory.slice(0, projectHistoryIndex + 1);
+            }
+            projectHistory.push(state);
+            projectHistoryIndex++;
+            (state.view === 'list') ? renderProjectsList() : renderProjectDetails(state.projectId);
+            updateFinderNav();
+        }
+        document.getElementById('project-back-btn').addEventListener('click', () => {
+            if (projectHistoryIndex <= 0) return;
+            projectHistoryIndex--;
+            const state = projectHistory[projectHistoryIndex];
+            (state.view === 'list') ? renderProjectsList() : renderProjectDetails(state.projectId);
+            updateFinderNav();
+        });
+        document.getElementById('project-forward-btn').addEventListener('click', () => {
+            if (projectHistoryIndex >= projectHistory.length - 1) return;
+            projectHistoryIndex++;
+            const state = projectHistory[projectHistoryIndex];
+            (state.view === 'list') ? renderProjectsList() : renderProjectDetails(state.projectId);
+            updateFinderNav();
+        });
+        
+        // --- Experience Timeline Logic ---
+        function renderExperienceTimeline() {
+            const timelineContainer = document.querySelector('#experience-window .timeline');
+            let timelineHTML = '';
+            timelineHTML += experienceData.map((job, index) => `
+                <div class="timeline-container ${index % 2 === 0 ? 'left' : 'right'}">
+                    <div class="content">
+                        <h2 class="text-xl font-bold">${job.role}</h2>
+                        <h3 class="text-md text-indigo-300">${job.company}</h3>
+                        <small class="text-gray-400">${job.date}</small>
+                        <ul class="list-disc list-inside mt-2 text-sm">
+                            ${job.points.map(point => `<li>${point}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `).join('');
+            timelineContainer.innerHTML = timelineHTML;
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.timeline-container').forEach(el => observer.observe(el));
+        }
+
+
+        // --- Start Menu ---
+        function toggleStartMenu(show) {
+             const menu = document.querySelector('.start-menu');
+             const isOpen = !menu.classList.contains('hidden');
+             const shouldShow = show === undefined ? !isOpen : show;
+             if (shouldShow) {
+                menu.classList.remove('hidden');
+                anime({ targets: menu, opacity: [0, 1], scale: [0.9, 1], translateY: [10, 0], duration: 200, easing: 'easeOutQuad' });
+             } else {
+                anime({ targets: menu, opacity: [1, 0], scale: [1, 0.9], translateY: [0, 10], duration: 200, easing: 'easeInQuad', complete: () => menu.classList.add('hidden') });
+             }
+        }
+        document.querySelector('.start-button').addEventListener('click', e => { e.stopPropagation(); toggleStartMenu(); });
+        document.addEventListener('click', e => { if (!e.target.closest('.start-button') && !e.target.closest('.start-menu')) toggleStartMenu(false); });
+
+        // --- Theme Toggle ---
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('hacker-mode');
+            this.innerHTML = document.body.classList.contains('hacker-mode') ? '<i data-feather="sun" class="w-5 h-5"></i>' : '<i data-feather="terminal" class="w-5 h-5"></i>';
+            if (document.body.classList.contains('hacker-mode')) startMatrix(); else stopMatrix();
+            feather.replace();
+        });
+
+        // --- Tooltip Logic ---
+        const tooltip = document.getElementById('tooltip');
+        document.body.addEventListener('mouseover', e => {
+            const target = e.target.closest('[data-tooltip]');
+            if (!target) {
+                tooltip.style.opacity = 0;
+                return;
+            }
+            tooltip.textContent = target.getAttribute('data-tooltip');
+            tooltip.style.opacity = 1;
+        });
+         document.body.addEventListener('mouseleave', () => {
+            tooltip.style.opacity = 0;
+        }, true);
+        document.body.addEventListener('mousemove', e => {
+            if (tooltip.style.opacity === '1') {
+                tooltip.style.left = e.pageX + 15 + 'px';
+                tooltip.style.top = e.pageY + 15 + 'px';
+            }
+        });
+
+        // --- Keyboard Shortcuts ---
+         document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.metaKey) {
+                e.preventDefault(); 
+                toggleStartMenu();
+            }
+        });
+
+
+        // --- Matrix Effect ---
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        function startMatrix() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const chars = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            const fontSize = 16;
+            const columns = canvas.width / fontSize;
+            const rainDrops = Array.from({ length: columns }).map(() => 1);
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#0F0';
+                ctx.font = `${fontSize}px monospace`;
+                for (let i = 0; i < rainDrops.length; i++) {
+                    const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                    ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                    if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) rainDrops[i] = 0;
+                    rainDrops[i]++;
+                }
+            }
+            matrixInterval = setInterval(draw, 30);
+        }
+        function stopMatrix() {
+            if(matrixInterval) clearInterval(matrixInterval);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        window.addEventListener('resize', () => {
+            if (document.body.classList.contains('hacker-mode')) { stopMatrix(); startMatrix(); }
+        });
+        document.addEventListener('DOMContentLoaded', () => { setTimeout(() => openWindow('about-window'), 500); });
+    </script>
+</body>
 </html>
