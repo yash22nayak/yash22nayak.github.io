@@ -84,7 +84,7 @@
 
         .window-controls { display: flex; align-items: center; gap: 8px; }
         .window-btn {
-            width: 16px; height: 16px; border-radius: 50%; border: none; cursor: pointer;
+            width: 20px; height: 20px; border-radius: 50%; border: none; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             transition: background-color 0.2s;
             position: relative; /* For tooltip */
@@ -95,7 +95,7 @@
         .minimize-btn:hover { background-color: #dea123; }
         .fullscreen-btn { background-color: #27c93f; }
         .fullscreen-btn:hover { background-color: #1da92e; }
-        .window-btn svg { opacity: 1; transition: opacity 0.2s; width: 8px; height: 8px; stroke: #333; stroke-width: 2.5; }
+        .window-btn svg { opacity: 1; transition: opacity 0.2s; width: 10px; height: 10px; stroke: #333; stroke-width: 2.5; }
 
 
         /* Window Resizers */
@@ -326,19 +326,29 @@
                     <button class="window-btn close-btn" data-tooltip="Close" data-window="about-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg></button>
                 </div>
             </div>
-            <div class="p-6 flex flex-col md:flex-row items-center flex-grow overflow-y-auto">
-                <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-indigo-400 mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+            <div class="p-6 flex flex-col md:flex-row items-center gap-6 border-b border-slate-700/50 flex-shrink-0">
+                <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-indigo-400 flex-shrink-0">
                     <img src="https://placehold.co/128x128/4F46E5/FFFFFF?text=YN" alt="Profile" class="w-full h-full object-cover">
                 </div>
-                <div>
-                    <h2 class="text-2xl font-bold mb-2">Yash Nayak</h2>
-                    <h3 class="text-xl text-indigo-300 mb-4">Full-Stack Software Engineer</h3>
-                    <p class="text-gray-300 leading-relaxed">
-                        Security-focused Full-Stack Software Engineer with strong expertise in backend development, scalable SaaS platforms, and secure system architecture. Experienced in Laravel, Livewire, Tailwind, MySQL, and RESTful APIs with proven ability to build real-time, automation-driven applications.
-                    </p>
-                     <div class="flex space-x-4 mt-4">
+                <div class="text-center md:text-left">
+                    <h2 class="text-3xl font-bold">Yash Nayak</h2>
+                    <p class="text-xl text-indigo-300">Full-Stack Software Engineer</p>
+                    <p class="text-gray-400 text-sm mt-1">"Build once, scale infinitely, and secure everything."</p>
+                </div>
+            </div>
+            <div class="p-6 flex-grow overflow-y-auto min-h-0">
+                <div class="text-gray-300 leading-relaxed space-y-4 text-sm">
+                    <p>👋 Hey there! I’m <strong class="text-indigo-300">Yash Nayak</strong>, a Full-Stack Engineer who loves blending <strong class="text-indigo-300">security, automation, and creativity</strong> to build applications that not only work — but <em>work smart</em>.</p>
+                    <p>💻 I specialize in <strong class="text-indigo-300">Laravel, Livewire, TailwindCSS, and MySQL</strong>, building everything from real-time dashboards to complex enterprise platforms. My passion lies in turning architecture into art.</p>
+                    <p>🧠 I also love building <strong class="text-indigo-300">automation workflows</strong> — CI/CD deployments, n8n pipelines, and custom GitHub integrations that bring the “zero-click deployment” dream closer to reality.</p>
+                    <p>🔐 With a background in <strong class="text-indigo-300">Vulnerability Assessment & Penetration Testing (VAPT)</strong>, I care deeply about secure coding practices and resilient architectures.</p>
+                    <p>🚀 I’ve developed tools that make technology simpler and smarter — from <strong class="text-indigo-300">Chrome extensions</strong> that manage team meetings in real-time 🧑‍💻 and secure Gmail communications ✉️, to <strong class="text-indigo-300">open-source Laravel/PHP packages</strong>.</p>
+                    <p>🌱 I’m currently diving deeper into the <strong class="text-indigo-300">MERN stack</strong>, experimenting with AI-driven SaaS products, and contributing to open-source.</p>
+                    <p>🌐 In short — I build secure, scalable, and smart digital experiences that combine backend power, frontend precision, and a bit of developer curiosity.</p>
+                    <div class="flex space-x-4 items-center justify-center md:justify-start pt-4">
                         <a href="https://linkedin.com/in/yash-nayak-8537141a1" target="_blank" class="text-gray-400 hover:text-white" data-tooltip="LinkedIn"><i data-feather="linkedin"></i></a>
                         <a href="https://github.com/yash22nayak" target="_blank" class="text-gray-400 hover:text-white" data-tooltip="GitHub"><i data-feather="github"></i></a>
+                        <a href="mailto:nayakyash2209@gmail.com" class="text-gray-400 hover:text-white" data-tooltip="nayakyash2209@gmail.com"><i data-feather="mail"></i></a>
                     </div>
                 </div>
             </div>
@@ -421,7 +431,7 @@
                 </div>
             </div>
             <div class="p-6 overflow-y-auto">
-                <form action="mailto:nayakyash2209@gmail.com" method="post" enctype="text/plain" class="space-y-4">
+                <form enctype="text/plain" id="contact-form" class="space-y-4">
                     <div><label class="block text-sm font-medium mb-1">Your Name</label><input type="text" name="name" class="w-full px-3 py-2 bg-slate-800/50 border border-gray-700 rounded focus:outline-none focus:border-indigo-500"></div>
                     <div><label class="block text-sm font-medium mb-1">Your Email</label><input type="email" name="email" class="w-full px-3 py-2 bg-slate-800/50 border border-gray-700 rounded focus:outline-none focus:border-indigo-500"></div>
                     <div><label class="block text-sm font-medium mb-1">Message</label><textarea name="message" rows="4" class="w-full px-3 py-2 bg-slate-800/50 border border-gray-700 rounded focus:outline-none focus:border-indigo-500"></textarea></div>
@@ -960,6 +970,27 @@
             if (document.body.classList.contains('hacker-mode')) { stopMatrix(); startMatrix(); }
         });
         document.addEventListener('DOMContentLoaded', () => { setTimeout(() => openWindow('about-window'), 500); });
+    </script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("NfJ9ED-lkbltXxhGC"); // Replace with your EmailJS public key
+        })();
+
+        window.onload = function() {
+            document.getElementById('contact-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                emailjs.sendForm('service_bq84q0i', 'template_zjj39xo', this) // Replace with your EmailJS service and template IDs
+                    .then(function() {
+                        alert('Message sent successfully!');
+                        document.getElementById('contact-form').reset();
+                    }, function(error) {
+                        alert('Failed to send message: ' + JSON.stringify(error));
+                    });
+            });
+        };
     </script>
 </body>
 </html>
