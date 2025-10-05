@@ -17,16 +17,12 @@ concurrency:
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
-    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # Optional: build step if needed
-      - name: Build
-        run: echo "No build step needed"
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
