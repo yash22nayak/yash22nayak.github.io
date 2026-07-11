@@ -1,13 +1,29 @@
-### Yash Nayak Portfolio
+# yash22nayak.github.io
 
-🚀 **My new portfolio is LIVE!**
-…and it might just make you feel like you’re opening a new OS 👨‍💻
+Personal portfolio of **Yash Nayak** — Full-Stack Engineer.
 
-I wanted something more than just “another scrolling portfolio,”
-so I built one that *feels alive* — with openable tabs, draggable windows,
-a taskbar, and even a night-mode that goes full hacker-vibe 🟩.
+A single-page static site with smooth scrolling and micro-animations, inspired by
+modern Awwwards-style portfolios. No build step, no runtime CDN dependencies —
+everything (fonts, GSAP, Lenis) is self-hosted in `assets/`.
 
-Every click gives you that sweet *system-like* feel —
-because why settle for static when you can make it interactive?
+## Structure
 
-💻 Check it out here 👉 [yash22nayak.github.io](https://yash22nayak.github.io)
+```
+index.html          # all content, semantic & SEO-ready
+assets/css/style.css
+assets/js/main.js   # Lenis smooth scroll, GSAP reveals, magnetic buttons,
+                    # cursor-following project previews, nav overlay
+assets/vendor/      # gsap.min.js, ScrollTrigger.min.js, lenis.min.js
+assets/fonts/       # Instrument Sans (woff2, self-hosted)
+assets/img/         # project cover artwork (SVG)
+```
+
+## Develop locally
+
+```bash
+python3 -m http.server 8000
+# open http://localhost:8000
+```
+
+All animations respect `prefers-reduced-motion`, and the full content is
+visible even with JavaScript disabled.
