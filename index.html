@@ -3,995 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yash Nayak's Portfolio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
-        
-        body {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-            height: 100vh;
-            overflow: hidden;
-            color: #E5E7EB;
-            background-color: #111827;
-        }
-        
-        /* --- Custom Scrollbar --- */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #6B7280; }
-
-        /* --- Creative Backgrounds --- */
-        #matrix-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            display: none; /* Hidden by default */
-        }
-
-        .blob-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-            transition: opacity 0.5s ease;
-        }
-
-        .blob {
-            position: absolute; border-radius: 50%;
-            filter: blur(100px); opacity: 0.6;
-        }
-        .blob1 { width: 400px; height: 400px; background: #e73c7e; top: -50px; left: -50px; animation: move 25s infinite alternate; }
-        .blob2 { width: 300px; height: 300px; background: #23a6d5; bottom: -50px; right: -50px; animation: move 20s infinite alternate-reverse; }
-        .blob3 { width: 250px; height: 250px; background: #ee7752; bottom: 100px; left: 200px; animation: move 30s infinite alternate; }
-
-        @keyframes move {
-            from { transform: translate(0, 0) scale(1); }
-            to { transform: translate(40vw, 50vh) scale(1.2) rotate(180deg); }
-        }
-
-        /* --- Window Styles --- */
-        .window {
-            background-color: rgba(23, 30, 48, 0.4);
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            position: absolute;
-            display: flex; flex-direction: column;
-            opacity: 0; /* Start hidden for animation */
-            transform-origin: center center;
-        }
-
-        .window-header {
-            background-color: rgba(0, 0, 0, 0.2); padding: 10px 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex; justify-content: space-between; align-items: center;
-            user-select: none;
-            flex-shrink: 0;
-        }
-        .window-header.draggable { cursor: grab; }
-        .window-header.dragging { cursor: grabbing; }
-        .window-title { display: flex; align-items: center; gap: 8px; }
-
-        .window-controls { display: flex; align-items: center; gap: 8px; }
-        .window-btn {
-            width: 20px; height: 20px; border-radius: 50%; border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: background-color 0.2s;
-            position: relative; /* For tooltip */
-        }
-        .close-btn { background-color: #ff5f56; }
-        .close-btn:hover { background-color: #e0443e; }
-        .minimize-btn { background-color: #ffbd2e; }
-        .minimize-btn:hover { background-color: #dea123; }
-        .fullscreen-btn { background-color: #27c93f; }
-        .fullscreen-btn:hover { background-color: #1da92e; }
-        .window-btn svg { opacity: 1; transition: opacity 0.2s; width: 10px; height: 10px; stroke: #333; stroke-width: 2.5; }
-
-
-        /* Window Resizers */
-        .resizer { position: absolute; width: 10px; height: 10px; background: transparent; z-index: 10; }
-        .resizer.top-left { top: -5px; left: -5px; cursor: nwse-resize; }
-        .resizer.top-right { top: -5px; right: -5px; cursor: nesw-resize; }
-        .resizer.bottom-left { bottom: -5px; left: -5px; cursor: nesw-resize; }
-        .resizer.bottom-right { bottom: -5px; right: -5px; cursor: nwse-resize; }
-        .resizer.top { top: -5px; left: 5px; right: 5px; height: 10px; cursor: ns-resize; }
-        .resizer.bottom { bottom: -5px; left: 5px; right: 5px; height: 10px; cursor: ns-resize; }
-        .resizer.left { top: 5px; bottom: 5px; left: -5px; width: 10px; cursor: ew-resize; }
-        .resizer.right { top: 5px; bottom: 5px; right: -5px; width: 10px; cursor: ew-resize; }
-
-        /* --- Experience Timeline Styles --- */
-        .timeline {
-            position: relative;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .timeline::after {
-            content: '';
-            position: absolute;
-            width: 2px;
-            background-color: #22d3ee;
-            box-shadow: 0 0 5px #22d3ee, 0 0 10px #22d3ee;
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            margin-left: -1px;
-        }
-        .timeline-container {
-            padding: 10px 40px;
-            position: relative;
-            background-color: inherit;
-            width: 50%;
-        }
-        .timeline-container.left { left: 0; }
-        .timeline-container.right { left: 50%; }
-        .timeline-container::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            right: -11px;
-            background-color: #818cf8;
-            top: 28px;
-            border-radius: 50%;
-            z-index: 1;
-            animation: heartbeat 1.5s ease-in-out infinite;
-        }
-         @keyframes heartbeat {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.7); }
-            50% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(129, 140, 248, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(129, 140, 248, 0); }
-        }
-        .timeline-container.right::after { left: -9px; }
-        .timeline-container .content {
-            padding: 20px 30px;
-            background-color: rgba(45, 55, 72, 0.8);
-            position: relative;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-        }
-        .timeline-container .content::before {
-            content: " ";
-            height: 0;
-            position: absolute;
-            top: 28px;
-            width: 0;
-            z-index: 1;
-            border: medium solid transparent;
-        }
-        .timeline-container.left .content::before {
-            right: -10px;
-            border-width: 10px 0 10px 10px;
-            border-left-color: rgba(45, 55, 72, 0.8);
-        }
-         .timeline-container.right .content::before {
-            left: -10px;
-            border-width: 10px 10px 10px 0;
-            border-right-color: rgba(45, 55, 72, 0.8);
-        }
-        .timeline-container.visible .content {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* Mobile view for timeline, controlled by JS */
-        .timeline.mobile-view::after { left: 31px; }
-        .timeline.mobile-view .timeline-container {
-            width: 100%;
-            padding-left: 70px;
-            padding-right: 25px;
-        }
-        .timeline.mobile-view .timeline-container.left, .timeline.mobile-view .timeline-container.right {
-            left: 0%;
-        }
-        .timeline.mobile-view .timeline-container.left::after, .timeline.mobile-view .timeline-container.right::after {
-            left: 20px;
-        }
-        .timeline.mobile-view .timeline-container.left .content::before, .timeline.mobile-view .timeline-container.right .content::before {
-            left: -10px;
-            border-width: 10px 10px 10px 0;
-            border-right-color: rgba(45, 55, 72, 0.8);
-        }
-        
-        /* --- Skill Icon Animation --- */
-        @keyframes float {
-            0% { transform: translateY(0px) translateX(0px); }
-            25% { transform: translateY(-3px) translateX(2px); }
-            50% { transform: translateY(2px) translateX(-3px); }
-            75% { transform: translateY(-2px) translateX(3px); }
-            100% { transform: translateY(0px) translateX(0px); }
-        }
-        .skill-icon {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        /* --- Tooltip Styles --- */
-        #tooltip {
-            position: fixed;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            z-index: 9999;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-            white-space: nowrap;
-        }
-
-        /* --- Windows 11 Taskbar --- */
-        #taskbar {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
-            padding: 8px; display: flex; align-items: center;
-            z-index: 1000; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        .taskbar-main-icons { display: flex; gap: 8px; }
-        .taskbar-separator { width: 1px; height: 24px; background-color: rgba(255, 255, 255, 0.1); margin: 0 8px; }
-        
-        .taskbar-icon, #theme-toggle {
-            width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
-            border-radius: 6px; cursor: pointer; color: #E5E7EB;
-            transition: all 0.2s ease; position: relative; background: none; border: none;
-        }
-        .taskbar-icon:hover, #theme-toggle:hover { background-color: rgba(255, 255, 255, 0.1); transform: translateY(-4px); }
-        .taskbar-icon.active::after {
-            content: ''; position: absolute; bottom: 2px; left: 50%;
-            transform: translateX(-50%); width: 20px; height: 3px;
-            background-color: #a78bfa; border-radius: 2px;
-        }
-        
-        .start-button {
-            width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
-            border-radius: 6px; cursor: pointer; color: #E5E7EB;
-            transition: all 0.2s ease; background-color: #4f46e5;
-        }
-        .start-button:hover { background-color: #6366f1; transform: scale(1.1); }
-
-        .start-menu {
-            position: absolute; bottom: calc(100% + 10px); left: 0;
-            background-color: rgba(42, 53, 75, 0.8); backdrop-filter: blur(20px);
-            border-radius: 8px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-            padding: 8px; min-w-[220px]; transform-origin: bottom left;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* --- Project Finder Styles --- */
-        .finder-nav { display: flex; align-items: center; padding: 4px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; }
-        .finder-btn { background: none; border: none; padding: 4px; border-radius: 4px; color: #E5E7EB; }
-        .finder-btn:not(:disabled):hover { background-color: rgba(255, 255, 255, 0.1); }
-        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 20px; }
-        .folder-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 8px; border-radius: 6px; transition: background-color 0.2s ease; }
-        .folder-item:hover { background-color: rgba(99, 102, 241, 0.2); }
-        .folder-item i { width: 64px; height: 64px; color: #818cf8; }
-        .folder-item span { font-size: 12px; margin-top: 8px; text-align: center; word-break: break-word; }
-
-        /* --- Neon/Hacker Theme --- */
-        body.hacker-mode { background: #000; font-family: 'Roboto Mono', monospace; }
-        .hacker-mode .blob-container { opacity: 0; }
-        .hacker-mode #matrix-canvas { display: block; }
-        .hacker-mode .window { background-color: rgba(0, 20, 0, 0.5) !important; border: 1px solid #0f0; box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 15px rgba(0, 255, 0, 0.2); }
-        .hacker-mode .window-header, .hacker-mode .finder-nav { border-bottom: 1px solid #0f0; }
-        .hacker-mode .window, .hacker-mode #taskbar, .hacker-mode .start-menu, .hacker-mode .taskbar-icon, .hacker-mode .start-button, .hacker-mode #theme-toggle, .hacker-mode .finder-btn { color: #0f0; }
-        .hacker-mode #taskbar { background: rgba(0, 20, 0, 0.5); border-color: #0f0; }
-        .hacker-mode .start-menu { background: rgba(0, 20, 0, 0.8); }
-        .hacker-mode .start-button { background-color: #084c08; text-shadow: 0 0 5px #0f0;}
-        .hacker-mode .taskbar-icon:hover, .hacker-mode .start-menu-item:hover, .hacker-mode #theme-toggle:hover, .hacker-mode .finder-btn:hover { background: rgba(0, 255, 0, 0.1); }
-        .hacker-mode .taskbar-icon.active::after { background-color: #0f0; box-shadow: 0 0 5px #0f0; }
-        .hacker-mode .text-indigo-300 { color: #39ff14; }
-        .hacker-mode .project-card, .hacker-mode .skill-icon div, .hacker-mode input, .hacker-mode textarea { background: rgba(0, 255, 0, 0.05) !important; border: 1px solid rgba(0, 255, 0, 0.3) !important; }
-        .hacker-mode button { background-color: #084c08 !important; }
-        .hacker-mode button:hover { background-color: #0f0 !important; color: #000 !important; }
-        .hacker-mode .timeline::after { box-shadow: 0 0 5px #0f0, 0 0 10px #0f0; background: #0f0; }
-        .hacker-mode .timeline-container::after { border-color: #0f0; background-color: #0f0; }
-
-    </style>
+    <title>Yash Nayak - Software Engineer</title>
+    <meta name="description" content="Yash Nayak is a security-focused software engineer in Ahmedabad, India - architecting fault-tolerant Laravel backends, enterprise ERPs and real-time platforms handling millions of records.">
+    <meta property="og:title" content="Yash Nayak - Software Engineer">
+    <meta property="og:description" content="Security-focused backend engineering. Laravel · System Design · VAPT · Automation.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yash22nayak.github.io/">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231C1D20'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial,sans-serif' font-size='34' font-weight='700' fill='%23F4F4F2' text-anchor='middle'%3EY.%3C/text%3E%3C/svg%3E">
+    <link rel="preload" href="assets/fonts/instrument-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/instrument-sans-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body class="relative overflow-hidden">
-    
-    <div class="blob-container">
-        <div class="blob blob1"></div>
-        <div class="blob blob2"></div>
-        <div class="blob blob3"></div>
-    </div>
-    <canvas id="matrix-canvas"></canvas>
-    
-    <!-- Tooltip Element -->
-    <div id="tooltip"></div>
+<body>
 
-    <!-- Windows -->
-    <div id="desktop-area">
-        <div id="about-window" class="window hidden">
-            <div class="resizer top-left"></div><div class="resizer top-right"></div><div class="resizer bottom-left"></div><div class="resizer bottom-right"></div><div class="resizer top"></div><div class="resizer bottom"></div><div class="resizer left"></div><div class="resizer right"></div>
-            <div class="window-header">
-                <div class="window-title"><i data-feather="user"></i><span>About Me</span></div>
-                <div class="window-controls">
-                    <button class="window-btn minimize-btn" data-tooltip="Minimize" data-window="about-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,14H4V10H20"/></svg></button>
-                    <button class="window-btn fullscreen-btn" data-tooltip="Maximize" data-window="about-window"><svg viewBox="0 0 10 10"><path fill="currentColor" d="M0,0v10h10V0H0z M9,9H1V1H9V9z"/></svg></button>
-                    <button class="window-btn close-btn" data-tooltip="Close" data-window="about-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg></button>
-                </div>
+    <!-- Page transition wipe -->
+    <div class="page-wipe" aria-hidden="true"></div>
+
+    <!-- Preloader -->
+    <div class="preloader" aria-hidden="true">
+        <p class="preloader__word"><span class="preloader__dot"></span><span class="preloader__text">Hello</span></p>
+        <svg class="preloader__curve" viewBox="0 0 100 12" preserveAspectRatio="none"><path d="M0 0 L100 0 L100 2 Q50 12 0 2 Z" fill="#141517"></path></svg>
+    </div>
+
+    <!-- Floating round menu button (appears on scroll / mobile) -->
+    <button class="menu-btn magnetic" aria-label="Open menu" aria-expanded="false">
+        <span class="menu-btn__burger"></span>
+    </button>
+
+    <!-- Fullscreen navigation overlay -->
+    <nav class="nav-overlay" aria-hidden="true">
+        <div class="nav-overlay__inner">
+            <p class="nav-overlay__label">Navigation</p>
+            <ul class="nav-overlay__links">
+                <li><a href="#work" data-nav>Work</a></li>
+                <li><a href="#about" data-nav>About</a></li>
+                <li><a href="#experience" data-nav>Experience</a></li>
+                <li><a href="#contact" data-nav>Contact</a></li>
+            </ul>
+            <div class="nav-overlay__socials">
+                <p class="nav-overlay__label">Socials</p>
+                <a href="https://github.com/yash22nayak" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://linkedin.com/in/yash-nayak-8537141a1" target="_blank" rel="noopener">LinkedIn</a>
+                <a href="mailto:nayakyash2209@gmail.com">Email</a>
             </div>
-            <div class="p-6 flex flex-col md:flex-row items-center gap-6 border-b border-slate-700/50 flex-shrink-0">
-                <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-indigo-400 flex-shrink-0">
-                    <img src="https://placehold.co/128x128/4F46E5/FFFFFF?text=YN" alt="Profile" class="w-full h-full object-cover">
-                </div>
-                <div class="text-center md:text-left">
-                    <h2 class="text-3xl font-bold">Yash Nayak</h2>
-                    <p class="text-xl text-indigo-300">Full-Stack Software Engineer</p>
-                    <p class="text-gray-400 text-sm mt-1">"Build once, scale infinitely, and secure everything."</p>
-                </div>
-            </div>
-            <div class="p-6 flex-grow overflow-y-auto min-h-0">
-                <div class="text-gray-300 leading-relaxed space-y-4 text-sm">
-                    <p>👋 Hey there! I’m <strong class="text-indigo-300">Yash Nayak</strong>, a Full-Stack Engineer who loves blending <strong class="text-indigo-300">security, automation, and creativity</strong> to build applications that not only work — but <em>work smart</em>.</p>
-                    <p>💻 I specialize in <strong class="text-indigo-300">Laravel, Livewire, TailwindCSS, and MySQL</strong>, building everything from real-time dashboards to complex enterprise platforms. My passion lies in turning architecture into art.</p>
-                    <p>🧠 I also love building <strong class="text-indigo-300">automation workflows</strong> — CI/CD deployments, n8n pipelines, and custom GitHub integrations that bring the “zero-click deployment” dream closer to reality.</p>
-                    <p>🔐 With a background in <strong class="text-indigo-300">Vulnerability Assessment & Penetration Testing (VAPT)</strong>, I care deeply about secure coding practices and resilient architectures.</p>
-                    <p>🚀 I’ve developed tools that make technology simpler and smarter — from <strong class="text-indigo-300">Chrome extensions</strong> that manage team meetings in real-time 🧑‍💻 and secure Gmail communications ✉️, to <strong class="text-indigo-300">open-source Laravel/PHP packages</strong>.</p>
-                    <p>🌱 I’m currently diving deeper into the <strong class="text-indigo-300">MERN stack</strong>, experimenting with AI-driven SaaS products, and contributing to open-source.</p>
-                    <p>🌐 In short — I build secure, scalable, and smart digital experiences that combine backend power, frontend precision, and a bit of developer curiosity.</p>
-                    <div class="flex space-x-4 items-center justify-center md:justify-start pt-4">
-                        <a href="https://linkedin.com/in/yash-nayak-8537141a1" target="_blank" class="text-gray-400 hover:text-white" data-tooltip="LinkedIn"><i data-feather="linkedin"></i></a>
-                        <a href="https://github.com/yash22nayak" target="_blank" class="text-gray-400 hover:text-white" data-tooltip="GitHub"><i data-feather="github"></i></a>
-                        <a href="mailto:nayakyash2209@gmail.com" class="text-gray-400 hover:text-white" data-tooltip="nayakyash2209@gmail.com"><i data-feather="mail"></i></a>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header__left">
+            <a class="header__logo" href="#top">
+                <span class="header__copy">©</span>
+                <span class="header__name"><span class="header__code">Code by </span>Yash</span>
+            </a>
+            <p class="header__role">Software Engineer</p>
+        </div>
+        <nav class="header__nav" aria-label="Primary">
+            <a href="#work" class="header__link">Work</a>
+            <a href="#about" class="header__link">About</a>
+            <a href="#experience" class="header__link">Experience</a>
+            <a href="#contact" class="header__link">Contact</a>
+        </nav>
+    </header>
+
+    <main id="top">
+
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero__frame">
+                <canvas class="hero__canvas" aria-hidden="true"></canvas>
+                <video class="hero__video" autoplay loop muted playsinline preload="auto" disablepictureinpicture aria-hidden="true" tabindex="-1">
+                    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_170732_8a9ccda6-5cff-4628-b164-059c500a2b41.mp4" type="video/mp4">
+                </video>
+                <div class="hero__noise" aria-hidden="true"></div>
+                <div class="hero__shade" aria-hidden="true"></div>
+                <h1 class="sr-only">Yash Nayak - Software Engineer</h1>
+                <div class="hero__marquee" aria-hidden="true">
+                    <div class="hero__marquee-track">
+                        <span>Yash Nayak&nbsp;-&nbsp;</span><span>Yash Nayak&nbsp;-&nbsp;</span><span>Yash Nayak&nbsp;-&nbsp;</span><span>Yash Nayak&nbsp;-&nbsp;</span>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="projects-window" class="window hidden">
-            <div class="resizer top-left"></div><div class="resizer top-right"></div><div class="resizer bottom-left"></div><div class="resizer bottom-right"></div><div class="resizer top"></div><div class="resizer bottom"></div><div class="resizer left"></div><div class="resizer right"></div>
-             <div class="window-header">
-                <div class="window-title"><i data-feather="folder"></i><span>Projects</span></div>
-                <div class="window-controls">
-                    <button class="window-btn minimize-btn" data-tooltip="Minimize" data-window="projects-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,14H4V10H20"/></svg></button>
-                    <button class="window-btn fullscreen-btn" data-tooltip="Maximize" data-window="projects-window"><svg viewBox="0 0 10 10"><path fill="currentColor" d="M0,0v10h10V0H0z M9,9H1V1H9V9z"/></svg></button>
-                    <button class="window-btn close-btn" data-tooltip="Close" data-window="projects-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg></button>
+        <!-- Intro / manifesto -->
+        <section class="intro" id="about">
+            <div class="intro__grid">
+                <p class="intro__statement" data-words>Architecting secure, fault-tolerant backend systems - from enterprise ERPs to real-time platforms that handle millions of records without breaking a sweat.</p>
+                <div class="intro__side">
+                    <p class="intro__sub" data-reveal>Security-focused engineer with 3+ years across Laravel, system design and offensive security. Running 20+ penetration tests for enterprise and government clients taught me to build software that expects to be attacked. Currently engineering at WebMavens, Ahmedabad.</p>
+                    <a class="circle-btn magnetic" href="#experience" data-reveal><span>My journey</span></a>
                 </div>
             </div>
-            <div class="flex-grow flex flex-col h-full bg-slate-800/20 min-h-0">
-                <div class="finder-nav">
-                    <button id="project-back-btn" class="finder-btn disabled:opacity-50" disabled data-tooltip="Back"><i data-feather="arrow-left"></i></button>
-                    <button id="project-forward-btn" class="finder-btn disabled:opacity-50" disabled data-tooltip="Forward"><i data-feather="arrow-right"></i></button>
-                    <div class="ml-4 font-semibold text-sm" id="finder-path"></div>
-                </div>
-                <div id="finder-content" class="flex-grow overflow-y-auto">
-                    <!-- Project content rendered by JS -->
-                </div>
+            <div class="intro__stats" data-reveal>
+                <div class="stat"><p class="stat__num">3+</p><p class="stat__label">Years of engineering</p></div>
+                <div class="stat"><p class="stat__num">20+</p><p class="stat__label">VAPT security audits</p></div>
+                <div class="stat"><p class="stat__num">10+</p><p class="stat__label">Systems shipped</p></div>
+                <div class="stat"><p class="stat__num">2</p><p class="stat__label">Open-source tools</p></div>
             </div>
-        </div>
+        </section>
 
-         <div id="skills-window" class="window hidden">
-            <div class="resizer top-left"></div><div class="resizer top-right"></div><div class="resizer bottom-left"></div><div class="resizer bottom-right"></div><div class="resizer top"></div><div class="resizer bottom"></div><div class="resizer left"></div><div class="resizer right"></div>
-            <div class="window-header">
-                <div class="window-title"><i data-feather="award"></i><span>My Skills</span></div>
-                <div class="window-controls">
-                    <button class="window-btn minimize-btn" data-tooltip="Minimize" data-window="skills-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,14H4V10H20"/></svg></button>
-                    <button class="window-btn fullscreen-btn" data-tooltip="Maximize" data-window="skills-window"><svg viewBox="0 0 10 10"><path fill="currentColor" d="M0,0v10h10V0H0z M9,9H1V1H9V9z"/></svg></button>
-                    <button class="window-btn close-btn" data-tooltip="Close" data-window="skills-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg></button>
-                </div>
-            </div>
-            <div class="p-6 grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-6 overflow-y-auto">
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Laravel" style="animation-delay: -0.5s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/353985/laravel.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">Laravel</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Livewire" style="animation-delay: -1.2s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://laravel-livewire.com/img/twitter.png" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">Livewire</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="MySQL" style="animation-delay: -2.5s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/373848/mysql.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">MySQL</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="JavaScript" style="animation-delay: -1.8s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/353925/javascript.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">JavaScript</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Tailwind CSS" style="animation-delay: -3.1s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/374118/tailwind.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">Tailwind</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="React" style="animation-delay: -0.8s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/452092/react.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">React</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Git" style="animation-delay: -2.1s;"><div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/503359/github.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">Github</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Security & VAPT" style="animation-delay: -1.5s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="shield" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">Security</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="REST APIs" style="animation-delay: -2.8s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="git-pull-request" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">REST APIs</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Node.js" style="animation-delay: -0.2s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><img src="https://www.svgrepo.com/show/452075/node-js.svg" class="w-8 h-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32/1F2937/FFFFFF?text=??';"></div><span class="text-sm">Node.js</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="Automation" style="animation-delay: -1.0s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="play-circle" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">Automation</span></div>
-                 <div class="skill-icon flex flex-col items-center" data-tooltip="SOLID Principles" style="animation-delay: -3.5s;"><div class="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-2"><i data-feather="layers" class="w-8 h-8 text-indigo-400"></i></div><span class="text-sm">SOLID</span></div>
-            </div>
-        </div>
-
-        <div id="experience-window" class="window hidden">
-            <div class="resizer top-left"></div><div class="resizer top-right"></div><div class="resizer bottom-left"></div><div class="resizer bottom-right"></div><div class="resizer top"></div><div class="resizer bottom"></div><div class="resizer left"></div><div class="resizer right"></div>
-            <div class="window-header">
-                <div class="window-title"><i data-feather="briefcase"></i><span>Experience</span></div>
-                <div class="window-controls">
-                    <button class="window-btn minimize-btn" data-tooltip="Minimize" data-window="experience-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,14H4V10H20"/></svg></button>
-                    <button class="window-btn fullscreen-btn" data-tooltip="Maximize" data-window="experience-window"><svg viewBox="0 0 10 10"><path fill="currentColor" d="M0,0v10h10V0H0z M9,9H1V1H9V9z"/></svg></button>
-                    <button class="window-btn close-btn" data-tooltip="Close" data-window="experience-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg></button>
-                </div>
-            </div>
-            <div id="experience-content" class="p-10 overflow-y-auto">
-                <div class="timeline">
-                    <!-- Experience items will be injected here by JS -->
-                </div>
-            </div>
-        </div>
-
-
-        <div id="contact-window" class="window hidden">
-             <div class="resizer top-left"></div><div class="resizer top-right"></div><div class="resizer bottom-left"></div><div class="resizer bottom-right"></div><div class="resizer top"></div><div class="resizer bottom"></div><div class="resizer left"></div><div class="resizer right"></div>
-             <div class="window-header">
-                <div class="window-title"><i data-feather="mail"></i><span>Contact Me</span></div>
-                <div class="window-controls">
-                    <button class="window-btn minimize-btn" data-tooltip="Minimize" data-window="contact-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,14H4V10H20"/></svg></button>
-                    <button class="window-btn fullscreen-btn" data-tooltip="Maximize" data-window="contact-window"><svg viewBox="0 0 10 10"><path fill="currentColor" d="M0,0v10h10V0H0z M9,9H1V1H9V9z"/></svg></button>
-                    <button class="window-btn close-btn" data-tooltip="Close" data-window="contact-window"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg></button>
-                </div>
-            </div>
-            <div class="p-6 overflow-y-auto">
-                <form enctype="text/plain" id="contact-form" class="space-y-4">
-                    <div><label class="block text-sm font-medium mb-1">Your Name</label><input type="text" name="name" class="w-full px-3 py-2 bg-slate-800/50 border border-gray-700 rounded focus:outline-none focus:border-indigo-500"></div>
-                    <div><label class="block text-sm font-medium mb-1">Your Email</label><input type="email" name="email" class="w-full px-3 py-2 bg-slate-800/50 border border-gray-700 rounded focus:outline-none focus:border-indigo-500"></div>
-                    <div><label class="block text-sm font-medium mb-1">Message</label><textarea name="message" rows="4" class="w-full px-3 py-2 bg-slate-800/50 border border-gray-700 rounded focus:outline-none focus:border-indigo-500"></textarea></div>
-                    <button type="submit" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md transition duration-300 flex items-center justify-center"><i data-feather="send" class="mr-2 w-4 h-4"></i> Send Email</button>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Taskbar -->
-    <div id="taskbar">
-        <div class="relative">
-            <div class="start-button" data-tooltip="Start Menu (Ctrl + Win)"><i data-feather="grid" class="w-5 h-5"></i></div>
-            <div class="start-menu hidden">
-                <div class="start-menu-item p-2 rounded-md hover:bg-white/10 transition flex items-center cursor-pointer" data-window="about-window"><i data-feather="user" class="w-5 h-5 mr-3"></i><span>About</span></div>
-                <div class="start-menu-item p-2 rounded-md hover:bg-white/10 transition flex items-center cursor-pointer" data-window="experience-window"><i data-feather="briefcase" class="w-5 h-5 mr-3"></i><span>Experience</span></div>
-                <div class="start-menu-item p-2 rounded-md hover:bg-white/10 transition flex items-center cursor-pointer" data-window="projects-window"><i data-feather="folder" class="w-5 h-5 mr-3"></i><span>Projects</span></div>
-                <div class="start-menu-item p-2 rounded-md hover:bg-white/10 transition flex items-center cursor-pointer" data-window="skills-window"><i data-feather="award" class="w-5 h-5 mr-3"></i><span>Skills</span></div>
-                <div class="start-menu-item p-2 rounded-md hover:bg-white/10 transition flex items-center cursor-pointer" data-window="contact-window"><i data-feather="mail" class="w-5 h-5 mr-3"></i><span>Contact</span></div>
-            </div>
-        </div>
-        <div class="taskbar-main-icons">
-            <div class="taskbar-icon" data-window="about-window" data-tooltip="About Me"><i data-feather="user"></i></div>
-            <div class="taskbar-icon" data-window="experience-window" data-tooltip="Experience"><i data-feather="briefcase"></i></div>
-            <div class="taskbar-icon" data-window="projects-window" data-tooltip="My Projects"><i data-feather="folder"></i></div>
-            <div class="taskbar-icon" data-window="skills-window" data-tooltip="My Skills"><i data-feather="award"></i></div>
-            <div class="taskbar-icon" data-window="contact-window" data-tooltip="Contact Me"><i data-feather="mail"></i></div>
-        </div>
-        <div class="flex-grow"></div>
-        <div class="taskbar-separator"></div>
-        <button id="theme-toggle" data-tooltip="Toggle Theme"><i data-feather="terminal" class="w-5 h-5"></i></button>
-    </div>
-
-    <script>
-        feather.replace();
-        
-        // --- Global State ---
-        let highestZ = 100;
-        let matrixInterval;
-        const projectsData = [
-            { id: 'p1', name: 'Team Meeting Manager - Chrome Extension', description: 'Real-time Chrome extension with WebSocket + Google Meet API for admin scheduling and live status updates.', tech: ['Chrome Extension', 'WebSocket', 'Google Meet API'], image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=2574&auto=format&fit=crop' },
-            { id: 'p2', name: 'Secure Gmail Service - Chrome Extension', description: 'Secure Gmail Chrome extension with disposable encrypted emails via Gmail API and a Laravel backend.', tech: ['Chrome Extension', 'Encryption', 'Gmail API'], image: 'https://images.unsplash.com/photo-1558021212-51b6ec1e3625?q=80&w=2557&auto=format&fit=crop' },
-            { id: 'p3', name: 'Global reCAPTCHA Package', description: 'Open-source Laravel/PHP package adding Google reCAPTCHA across all requests with middleware and service provider binding.', tech: ['Laravel', 'PHP', 'Open Source'], image: 'https://images.unsplash.com/photo-1516116216624-53e69730b9dd?q=80&w=2670&auto=format&fit=crop' },
-            { id: 'p4', name: 'Enterprise Store Mgmt', description: 'Complex enterprise app for a dress designing company with a scalable DB, Livewire, Algolia, and queue workers.', tech: ['Enterprise', 'Livewire', 'Algolia'], image: 'https://images.unsplash.com/photo-1524234103236-90212237063d?q=80&w=2670&auto=format&fit=crop' },
-            { id: 'p5', name: 'Autonomous Deployment', description: 'Automated CI/CD from GitHub PRs to Laravel Forge with live preview links.', tech: ['CI/CD', 'GitHub API', 'Laravel Forge'], image: 'https://images.unsplash.com/photo-1580894742597-87bc8789db3d?q=80&w=2670&auto=format&fit=crop' },
-            { id: 'p6', name: 'Stock Alert Platform', description: 'Built predictive stock alert system with Python ML models + Stripe for subscriptions, role-based access, and real-time notifications.', tech: ['Python', 'Machine Learning', 'Stripe'], image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=2670&auto=format&fit=crop' },
-            { id: 'p7', name: 'LMS Platform', description: 'Complete LMS backend with payments (Razorpay), live sessions, assignment tracking, and secure APIs.', tech: ['LMS', 'Razorpay', 'API'], image: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=2574&auto=format&fit=crop' },
-        ];
-        const experienceData = [
-            {
-                company: 'WebMavens',
-                role: 'Laravel Developer',
-                date: 'July 2024 - Current',
-                points: [
-                    'Built secure backend features and integrated third-party APIs.',
-                    'Managed real-time workflows using Laravel\'s asynchronous capabilities.',
-                    'Contributed to advanced projects with complex architecture and services.'
-                ]
-            },
-            {
-                company: 'Freelancing',
-                role: 'Full-Stack Developer',
-                date: 'Nov 2023 - June 2024',
-                points: [
-                    'Delivered CMS-based admin panels and CRUD systems.',
-                    'Developed user management features and optimized workflows.'
-                ]
-            },
-            {
-                company: 'TechDefence Labs',
-                role: 'Security Analyst (VAPT)',
-                date: 'Nov 2023 - May 2024',
-                points: [
-                    'Conducted vulnerability assessments and penetration testing.',
-                    'Used tools like Nessus, Nmap, and Burp Suite to identify risks.',
-                    'Delivered detailed remediation guidelines to client teams.'
-                ]
-            },
-            {
-                company: 'Glorywebs Creatives',
-                role: 'Laravel Developer',
-                date: 'Jan 2023 - Nov 2023',
-                points: [
-                    'Built and optimized backend systems for custom applications.',
-                    'Focused on database structure, performance tuning, and security.'
-                ]
-            }
-        ];
-        let projectHistory = [];
-        let projectHistoryIndex = -1;
-
-        // --- Window Management ---
-        const allIcons = document.querySelectorAll('.taskbar-icon, .start-menu-item');
-        allIcons.forEach(icon => {
-            icon.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const windowId = this.getAttribute('data-window');
-                openWindow(windowId);
-                toggleStartMenu(false);
-            });
-        });
-
-        function openWindow(windowId) {
-            const windowElement = document.getElementById(windowId);
-            if (!windowElement) return;
-
-            highestZ++;
-            windowElement.style.zIndex = highestZ;
-            
-            if (windowElement.classList.contains('hidden')) {
-                windowElement.classList.remove('hidden');
-
-                if (window.innerWidth <= 768) {
-                    setToFullscreen(windowElement);
-                } else {
-                    setToRestored(windowElement);
-                }
-
-                anime({ targets: windowElement, opacity: [0, 1], scale: [0.98, 1], duration: 300, easing: 'easeOutCubic' });
-                
-                if (windowId === 'projects-window' && projectHistory.length === 0) {
-                    navigateToProjectView({ view: 'list' });
-                }
-                if (windowId === 'experience-window') {
-                    renderExperienceTimeline();
-                     if (!windowElement.dataset.observed) { 
-                        const timeline = windowElement.querySelector('.timeline');
-                        const experienceObserver = new ResizeObserver(entries => {
-                            for (const entry of entries) {
-                                if (entry.contentRect.width < 640) {
-                                    timeline.classList.add('mobile-view');
-                                } else {
-                                    timeline.classList.remove('mobile-view');
-                                }
-                            }
-                        });
-                        experienceObserver.observe(windowElement);
-                        windowElement.dataset.observed = 'true';
-                    }
-                }
-            }
-            updateActiveTaskbarIcon(windowId);
-        }
-
-        document.querySelectorAll('.window').forEach(windowEl => {
-             windowEl.addEventListener('mousedown', () => {
-                highestZ++;
-                windowEl.style.zIndex = highestZ;
-            });
-        });
-
-        document.querySelectorAll('.window-btn').forEach(btn => {
-            const windowId = btn.getAttribute('data-window');
-            const windowElement = document.getElementById(windowId);
-
-            if (btn.classList.contains('close-btn')) {
-                btn.addEventListener('click', () => {
-                    anime({
-                        targets: windowElement, opacity: 0, scale: 0.98, duration: 200, easing: 'easeInCubic',
-                        complete: () => {
-                            windowElement.classList.add('hidden');
-                            document.querySelector(`.taskbar-icon[data-window="${windowId}"]`).classList.remove('active');
-                        }
-                    });
-                });
-            } else if (btn.classList.contains('minimize-btn')) {
-                 btn.addEventListener('click', () => {
-                    windowElement.classList.add('hidden');
-                    document.querySelector(`.taskbar-icon[data-window="${windowId}"]`).classList.remove('active');
-                 });
-            } else if (btn.classList.contains('fullscreen-btn')) {
-                 btn.addEventListener('click', () => toggleWindowSize(windowElement));
-            }
-        });
-
-        function setToFullscreen(el) {
-            el.style.transition = 'width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease';
-            el.style.width = '100vw';
-            el.style.height = `calc(100vh - 80px)`;
-            el.style.top = '0';
-            el.style.left = '0';
-            el.dataset.isMaximized = 'true';
-            el.querySelector('.window-header').classList.remove('draggable');
-            setTimeout(() => el.style.transition = '', 300);
-        }
-
-        function setToRestored(el) {
-            el.style.transition = 'width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease';
-            el.style.width = '70vw';
-            el.style.height = '75vh';
-            el.style.top = '10vh';
-            el.style.left = '15vw';
-            el.dataset.isMaximized = 'false';
-            el.querySelector('.window-header').classList.add('draggable');
-            setTimeout(() => el.style.transition = '', 300);
-        }
-
-        function toggleWindowSize(el) {
-            if (el.dataset.isMaximized === 'true') {
-                setToRestored(el);
-            } else {
-                setToFullscreen(el);
-            }
-        }
-
-        function updateActiveTaskbarIcon(windowId) {
-            document.querySelectorAll('.taskbar-icon').forEach(icon => {
-                icon.classList.toggle('active', icon.getAttribute('data-window') === windowId);
-            });
-        }
-        
-        document.querySelectorAll('.window').forEach(windowEl => {
-            makeDraggable(windowEl);
-            makeResizable(windowEl);
-        });
-        
-        function makeDraggable(element) {
-            const header = element.querySelector('.window-header');
-            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-
-            header.onmousedown = dragMouseDown;
-
-            function dragMouseDown(e) {
-                if (!header.classList.contains('draggable') || e.target.closest('.window-btn') || e.target.classList.contains('resizer')) return;
-                
-                e = e || window.event;
-                e.preventDefault();
-                
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                
-                highestZ++;
-                element.style.zIndex = highestZ;
-                header.classList.add('dragging');
-                document.body.style.userSelect = 'none';
-
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
-            }
-
-            function elementDrag(e) {
-                e = e || window.event;
-                e.preventDefault();
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                element.style.top = (element.offsetTop - pos2) + "px";
-                element.style.left = (element.offsetLeft - pos1) + "px";
-            }
-
-            function closeDragElement() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-                header.classList.remove('dragging');
-                document.body.style.userSelect = '';
-            }
-        }
-
-        function makeResizable(element) {
-            const resizers = element.querySelectorAll('.resizer');
-            const minimum_size = 300;
-            let original_width = 0;
-            let original_height = 0;
-            let original_x = 0;
-            let original_y = 0;
-            let original_mouse_x = 0;
-            let original_mouse_y = 0;
-
-            resizers.forEach(resizer => {
-                resizer.addEventListener('mousedown', function (e) {
-                    if (element.dataset.isMaximized === 'true') return;
-                    e.preventDefault();
-                    original_width = parseFloat(getComputedStyle(element, null).getPropertyValue('width').replace('px', ''));
-                    original_height = parseFloat(getComputedStyle(element, null).getPropertyValue('height').replace('px', ''));
-                    original_x = element.getBoundingClientRect().left;
-                    original_y = element.getBoundingClientRect().top;
-                    original_mouse_x = e.pageX;
-                    original_mouse_y = e.pageY;
-                    
-                    const currentResizer = this;
-                    
-                    const resize = (e) => {
-                        if (currentResizer.classList.contains('bottom-right')) {
-                            const width = original_width + (e.pageX - original_mouse_x);
-                            const height = original_height + (e.pageY - original_mouse_y);
-                            if (width > minimum_size) element.style.width = width + 'px';
-                            if (height > minimum_size) element.style.height = height + 'px';
-                        } else if (currentResizer.classList.contains('bottom-left')) {
-                            const height = original_height + (e.pageY - original_mouse_y);
-                            const width = original_width - (e.pageX - original_mouse_x);
-                            if (height > minimum_size) element.style.height = height + 'px';
-                            if (width > minimum_size) {
-                                element.style.width = width + 'px';
-                                element.style.left = original_x + (e.pageX - original_mouse_x) + 'px';
-                            }
-                        } else if (currentResizer.classList.contains('top-right')) {
-                            const width = original_width + (e.pageX - original_mouse_x);
-                            const height = original_height - (e.pageY - original_mouse_y);
-                            if (width > minimum_size) element.style.width = width + 'px';
-                            if (height > minimum_size) {
-                                element.style.height = height + 'px';
-                                element.style.top = original_y + (e.pageY - original_mouse_y) + 'px';
-                            }
-                        } else if (currentResizer.classList.contains('top-left')) {
-                            const width = original_width - (e.pageX - original_mouse_x);
-                            const height = original_height - (e.pageY - original_mouse_y);
-                            if (width > minimum_size) {
-                                element.style.width = width + 'px';
-                                element.style.left = original_x + (e.pageX - original_mouse_x) + 'px';
-                            }
-                            if (height > minimum_size) {
-                                element.style.height = height + 'px';
-                                element.style.top = original_y + (e.pageY - original_mouse_y) + 'px';
-                            }
-                        } else if (currentResizer.classList.contains('right')) {
-                            const width = original_width + (e.pageX - original_mouse_x);
-                            if (width > minimum_size) element.style.width = width + 'px';
-                        } else if (currentResizer.classList.contains('left')) {
-                            const width = original_width - (e.pageX - original_mouse_x);
-                            if (width > minimum_size) {
-                                element.style.width = width + 'px';
-                                element.style.left = original_x + (e.pageX - original_mouse_x) + 'px';
-                            }
-                        } else if (currentResizer.classList.contains('bottom')) {
-                            const height = original_height + (e.pageY - original_mouse_y);
-                            if (height > minimum_size) element.style.height = height + 'px';
-                        } else { // top
-                            const height = original_height - (e.pageY - original_mouse_y);
-                            if (height > minimum_size) {
-                                element.style.height = height + 'px';
-                                element.style.top = original_y + (e.pageY - original_mouse_y) + 'px';
-                            }
-                        }
-                    }
-
-                    const stopResize = () => {
-                        window.removeEventListener('mousemove', resize);
-                        window.removeEventListener('mouseup', stopResize);
-                    }
-
-                    window.addEventListener('mousemove', resize);
-                    window.addEventListener('mouseup', stopResize);
-                });
-            });
-        }
-
-        // --- Project Finder Logic ---
-        function renderProjectsList() {
-            const contentArea = document.getElementById('finder-content');
-            contentArea.innerHTML = `<div class="folder-grid p-4">${projectsData.map(p => `<div class="folder-item" data-project-id="${p.id}"><i data-feather="folder"></i><span>${p.name}</span></div>`).join('')}</div>`;
-            feather.replace();
-            document.querySelectorAll('.folder-item').forEach(folder => {
-                folder.addEventListener('click', () => navigateToProjectView({ view: 'details', projectId: folder.dataset.projectId }));
-            });
-        }
-        function renderProjectDetails(projectId) {
-            const project = projectsData.find(p => p.id === projectId);
-            if (!project) return;
-            const contentArea = document.getElementById('finder-content');
-            contentArea.innerHTML = `
-                <div class="flex flex-col md:flex-row gap-8 p-6 h-full">
-                    <div class="md:w-1/2 flex-shrink-0">
-                        <img src="${project.image}" alt="${project.name}" class="w-full h-auto object-cover rounded-lg shadow-lg" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1F2937/FFFFFF?text=Image+Unavailable';">
-                    </div>
-                    <div class="md:w-1/2 flex flex-col">
-                        <h2 class="text-3xl font-bold mb-4">${project.name}</h2>
-                        <p class="mb-4">${project.description}</p>
-                        <div class="mt-auto pt-4">
-                            <h3 class="text-xl font-semibold mb-2">Technologies Used:</h3>
-                            <div class="flex flex-wrap gap-2">${project.tech.map(t => `<span class="bg-indigo-500/50 text-indigo-200 text-xs font-semibold px-2.5 py-0.5 rounded">${t}</span>`).join('')}</div>
+        <!-- Work -->
+        <section class="work" id="work">
+            <p class="section-label" data-reveal>Recent Work</p>
+            <ul class="work__list">
+                <li class="work__item" data-cover="assets/img/work-store.svg" data-reveal>
+                    <a class="work__row" href="work/enterprise-store-management.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">Enterprise Store System</h2>
+                            <p class="work__tech">Laravel · Livewire · Filament · Algolia · Queues</p>
                         </div>
-                    </div>
-                </div>`;
-        }
-        function updateFinderNav() {
-            const backBtn = document.getElementById('project-back-btn');
-            const fwdBtn = document.getElementById('project-forward-btn');
-            const pathEl = document.getElementById('finder-path');
+                        <p class="work__cat">Enterprise · Live</p>
+                    </a>
+                </li>
+                <li class="work__item" data-cover="assets/img/work-erp.svg" data-reveal>
+                    <a class="work__row" href="work/business-management-erp.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">Business Management ERP</h2>
+                            <p class="work__tech">Filament · Livewire · Flux UI · Alpine.js</p>
+                        </div>
+                        <p class="work__cat">Enterprise</p>
+                    </a>
+                </li>
+                <li class="work__item" data-cover="assets/img/work-mail.svg" data-reveal>
+                    <a class="work__row" href="work/secure-gmail-service.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">SafeMailer for Gmail</h2>
+                            <p class="work__tech">Gmail API · Laravel · Encryption · Chrome Web Store</p>
+                        </div>
+                        <p class="work__cat">Open Source · Security</p>
+                    </a>
+                </li>
+                <li class="work__item" data-cover="assets/img/work-captcha.svg" data-reveal>
+                    <a class="work__row" href="work/global-recaptcha-package.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">Auto Google reCAPTCHA</h2>
+                            <p class="work__tech">Laravel · PHP · Middleware · Composer</p>
+                        </div>
+                        <p class="work__cat">Open Source</p>
+                    </a>
+                </li>
+                <li class="work__item" data-cover="assets/img/work-deploy.svg" data-reveal>
+                    <a class="work__row" href="work/autonomous-deployment.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">Autonomous Deployment</h2>
+                            <p class="work__tech">Laravel Jobs · GitHub API · Laravel Forge · Shell</p>
+                        </div>
+                        <p class="work__cat">Automation</p>
+                    </a>
+                </li>
+                <li class="work__item" data-cover="assets/img/work-stocks.svg" data-reveal>
+                    <a class="work__row" href="work/stock-alert-platform.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">Stock Alert &amp; Prediction</h2>
+                            <p class="work__tech">Laravel Reverb · Python ML · Stripe</p>
+                        </div>
+                        <p class="work__cat">SaaS</p>
+                    </a>
+                </li>
+                <li class="work__item" data-cover="assets/img/work-meet.svg" data-reveal>
+                    <a class="work__row" href="work/team-meeting-manager.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">Team Meeting Manager</h2>
+                            <p class="work__tech">WebSocket · Google Meet API · Laravel</p>
+                        </div>
+                        <p class="work__cat">Real-time Extension</p>
+                    </a>
+                </li>
+            </ul>
+            <div class="work__archive" data-reveal>
+                <p class="section-label">Also built</p>
+                <ul class="archive__list">
+                    <li class="archive__item">
+                        <div><h3>Learning Management Platform</h3><p>Complete LMS backend - courses, live sessions, assignment tracking, Razorpay payments.</p></div>
+                        <p class="archive__tech">Laravel · Razorpay</p>
+                    </li>
+                    <li class="archive__item">
+                        <div><h3>Restaurant Review Platform</h3><p>Web + mobile review platform with comprehensive PestPHP test coverage and a PHP Native companion app.</p></div>
+                        <p class="archive__tech">Laravel · PestPHP</p>
+                    </li>
+                    <li class="archive__item">
+                        <div><h3>Resilient Campaign CRM</h3><p>Real-time Google Sheets sync engine with queue-driven retries for third-party API failures.</p></div>
+                        <p class="archive__tech">Sheets API · Queues</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="work__more" data-reveal>
+                <a class="circle-btn circle-btn--light magnetic" href="https://github.com/yash22nayak" target="_blank" rel="noopener"><span>More on GitHub</span></a>
+            </div>
+            <div class="work__preview" aria-hidden="true"><img src="assets/img/work-meet.svg" alt=""></div>
+        </section>
 
-            backBtn.disabled = projectHistoryIndex <= 0;
-            fwdBtn.disabled = projectHistoryIndex >= projectHistory.length - 1;
-            
-            const currentView = projectHistory[projectHistoryIndex];
-            if (currentView.view === 'list') {
-                pathEl.innerHTML = `<span>Projects</span>`;
-            } else {
-                const project = projectsData.find(p => p.id === currentView.projectId);
-                pathEl.innerHTML = `<a href="#" id="breadcrumb-projects" class="hover:underline cursor-pointer opacity-75">Projects</a> / <span>${project.name}</span>`;
-                
-                const breadcrumbLink = document.getElementById('breadcrumb-projects');
-                if (breadcrumbLink) {
-                    breadcrumbLink.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        navigateToProjectView({ view: 'list' });
-                    });
-                }
-            }
-        }
-        function navigateToProjectView(state) {
-            if (projectHistoryIndex < projectHistory.length - 1) {
-                projectHistory = projectHistory.slice(0, projectHistoryIndex + 1);
-            }
-            projectHistory.push(state);
-            projectHistoryIndex++;
-            (state.view === 'list') ? renderProjectsList() : renderProjectDetails(state.projectId);
-            updateFinderNav();
-        }
-        document.getElementById('project-back-btn').addEventListener('click', () => {
-            if (projectHistoryIndex <= 0) return;
-            projectHistoryIndex--;
-            const state = projectHistory[projectHistoryIndex];
-            (state.view === 'list') ? renderProjectsList() : renderProjectDetails(state.projectId);
-            updateFinderNav();
-        });
-        document.getElementById('project-forward-btn').addEventListener('click', () => {
-            if (projectHistoryIndex >= projectHistory.length - 1) return;
-            projectHistoryIndex++;
-            const state = projectHistory[projectHistoryIndex];
-            (state.view === 'list') ? renderProjectsList() : renderProjectDetails(state.projectId);
-            updateFinderNav();
-        });
-        
-        // --- Experience Timeline Logic ---
-        function renderExperienceTimeline() {
-            const timelineContainer = document.querySelector('#experience-window .timeline');
-            let timelineHTML = '';
-            timelineHTML += experienceData.map((job, index) => `
-                <div class="timeline-container ${index % 2 === 0 ? 'left' : 'right'}">
-                    <div class="content">
-                        <h2 class="text-xl font-bold">${job.role}</h2>
-                        <h3 class="text-md text-indigo-300">${job.company}</h3>
-                        <small class="text-gray-400">${job.date}</small>
-                        <ul class="list-disc list-inside mt-2 text-sm">
-                            ${job.points.map(point => `<li>${point}</li>`).join('')}
-                        </ul>
+        <!-- Experience -->
+        <section class="experience" id="experience">
+            <p class="section-label" data-reveal>Experience</p>
+            <ul class="experience__list">
+                <li class="experience__item" data-reveal>
+                    <div class="experience__row">
+                        <div><h3>Software Engineer</h3><p>WebMavens - Ahmedabad</p></div>
+                        <p class="experience__date">July 2024 - Present</p>
+                    </div>
+                    <ul class="experience__points">
+                        <li>Architected and scaled backend systems for enterprise applications, optimizing complex relational databases to handle and index millions of concurrent records.</li>
+                        <li>Engineered real-time data pipelines with Laravel Queues, Reverb and WebSockets, and designed fault-tolerant REST APIs with rate limiting and strict validation.</li>
+                        <li>Pioneered AI-augmented engineering workflows, accelerating feature delivery without compromising architecture or security.</li>
+                    </ul>
+                </li>
+                <li class="experience__item" data-reveal>
+                    <div class="experience__row">
+                        <div><h3>Freelance Backend Engineer</h3><p>Self-employed - Ahmedabad</p></div>
+                        <p class="experience__date">Nov 2023 - June 2024</p>
+                    </div>
+                    <ul class="experience__points">
+                        <li>Led end-to-end system design for multiple client platforms - scalable, normalized schemas and clean MVC architectures.</li>
+                        <li>Built CMS solutions with granular role-based access control, secure tenant isolation and custom API integrations.</li>
+                    </ul>
+                </li>
+                <li class="experience__item" data-reveal>
+                    <div class="experience__row">
+                        <div><h3>Security Analyst - VAPT</h3><p>TechDefence Labs - Ahmedabad</p></div>
+                        <p class="experience__date">Nov 2023 - May 2024</p>
+                    </div>
+                    <ul class="experience__points">
+                        <li>Executed 20+ vulnerability assessments and penetration tests across web, API and network infrastructure for enterprise and government clients.</li>
+                        <li>Identified critical vulnerabilities with Burp Suite and Metasploit, delivering architectural-level remediation strategies to engineering teams.</li>
+                    </ul>
+                </li>
+                <li class="experience__item" data-reveal>
+                    <div class="experience__row">
+                        <div><h3>Laravel Developer</h3><p>Glorywebs Creatives - Ahmedabad</p></div>
+                        <p class="experience__date">Jan 2023 - Nov 2023</p>
+                    </div>
+                    <ul class="experience__points">
+                        <li>Optimized legacy backends - resolved N+1 query bottlenecks and restructured database indexing to drastically improve response times and API throughput.</li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="experience__edu" data-reveal>
+                <p class="section-label">Education</p>
+                <div class="experience__row">
+                    <div><h3>B.E. in Computer Engineering</h3><p>Gujarat Technological University - Ahmedabad</p></div>
+                    <p class="experience__date">2019 - 2023</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills marquee -->
+        <div class="skills" aria-label="Skills">
+            <div class="skills__track">
+                <span>Laravel ✦ Filament ✦ Livewire ✦ PHP ✦ MySQL ✦ REST APIs ✦ Laravel Reverb ✦ WebSockets ✦ Alpine.js ✦ Tailwind CSS ✦ Stripe ✦ Razorpay ✦ Algolia ✦ GitHub Actions ✦ CI/CD ✦ n8n ✦ OWASP Top 10 ✦ Burp Suite ✦ PestPHP ✦&nbsp;</span><span>Laravel ✦ Filament ✦ Livewire ✦ PHP ✦ MySQL ✦ REST APIs ✦ Laravel Reverb ✦ WebSockets ✦ Alpine.js ✦ Tailwind CSS ✦ Stripe ✦ Razorpay ✦ Algolia ✦ GitHub Actions ✦ CI/CD ✦ n8n ✦ OWASP Top 10 ✦ Burp Suite ✦ PestPHP ✦&nbsp;</span>
+            </div>
+        </div>
+
+        <!-- Contact / footer -->
+        <footer class="contact" id="contact">
+            <div class="contact__head">
+                <h2 class="contact__title" data-words>Let's work together</h2>
+                <div class="contact__line">
+                    <a class="circle-btn circle-btn--accent magnetic" href="mailto:nayakyash2209@gmail.com"><span>Get in touch</span></a>
+                </div>
+                <div class="contact__pills">
+                    <a class="pill magnetic" href="mailto:nayakyash2209@gmail.com">nayakyash2209@gmail.com</a>
+                    <a class="pill magnetic" href="tel:+916355672155">+91 63556 72155</a>
+                </div>
+            </div>
+            <div class="contact__bottom">
+                <div class="contact__meta">
+                    <p class="contact__meta-label">Version</p>
+                    <p>2026 © Edition</p>
+                </div>
+                <div class="contact__meta">
+                    <p class="contact__meta-label">Location</p>
+                    <p>Ahmedabad, India</p>
+                </div>
+                <div class="contact__meta">
+                    <p class="contact__meta-label">Local time</p>
+                    <p><span id="local-time">--:--</span> IST</p>
+                </div>
+                <div class="contact__socials">
+                    <p class="contact__meta-label">Socials</p>
+                    <div>
+                        <a href="https://github.com/yash22nayak" target="_blank" rel="noopener">GitHub</a>
+                        <a href="https://linkedin.com/in/yash-nayak-8537141a1" target="_blank" rel="noopener">LinkedIn</a>
                     </div>
                 </div>
-            `).join('');
-            timelineContainer.innerHTML = timelineHTML;
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, { threshold: 0.1 });
+            </div>
+        </footer>
 
-            document.querySelectorAll('.timeline-container').forEach(el => observer.observe(el));
-        }
+    </main>
 
-
-        // --- Start Menu ---
-        function toggleStartMenu(show) {
-             const menu = document.querySelector('.start-menu');
-             const isOpen = !menu.classList.contains('hidden');
-             const shouldShow = show === undefined ? !isOpen : show;
-             if (shouldShow) {
-                menu.classList.remove('hidden');
-                anime({ targets: menu, opacity: [0, 1], scale: [0.9, 1], translateY: [10, 0], duration: 200, easing: 'easeOutQuad' });
-             } else {
-                anime({ targets: menu, opacity: [1, 0], scale: [1, 0.9], translateY: [0, 10], duration: 200, easing: 'easeInQuad', complete: () => menu.classList.add('hidden') });
-             }
-        }
-        document.querySelector('.start-button').addEventListener('click', e => { e.stopPropagation(); toggleStartMenu(); });
-        document.addEventListener('click', e => { if (!e.target.closest('.start-button') && !e.target.closest('.start-menu')) toggleStartMenu(false); });
-
-        // --- Theme Toggle ---
-        document.getElementById('theme-toggle').addEventListener('click', function() {
-            document.body.classList.toggle('hacker-mode');
-            this.innerHTML = document.body.classList.contains('hacker-mode') ? '<i data-feather="sun" class="w-5 h-5"></i>' : '<i data-feather="terminal" class="w-5 h-5"></i>';
-            if (document.body.classList.contains('hacker-mode')) startMatrix(); else stopMatrix();
-            feather.replace();
-        });
-
-        // --- Tooltip Logic ---
-        const tooltip = document.getElementById('tooltip');
-        document.body.addEventListener('mouseover', e => {
-            const target = e.target.closest('[data-tooltip]');
-            if (!target) {
-                tooltip.style.opacity = 0;
-                return;
-            }
-            tooltip.textContent = target.getAttribute('data-tooltip');
-            tooltip.style.opacity = 1;
-        });
-         document.body.addEventListener('mouseleave', () => {
-            tooltip.style.opacity = 0;
-        }, true);
-        document.body.addEventListener('mousemove', e => {
-            if (tooltip.style.opacity === '1') {
-                tooltip.style.left = e.pageX + 15 + 'px';
-                tooltip.style.top = e.pageY + 15 + 'px';
-            }
-        });
-
-        // --- Keyboard Shortcuts ---
-         document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.metaKey) {
-                e.preventDefault(); 
-                toggleStartMenu();
-            }
-        });
-
-
-        // --- Matrix Effect ---
-        const canvas = document.getElementById('matrix-canvas');
-        const ctx = canvas.getContext('2d');
-        function startMatrix() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            const chars = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            const fontSize = 16;
-            const columns = canvas.width / fontSize;
-            const rainDrops = Array.from({ length: columns }).map(() => 1);
-            function draw() {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#0F0';
-                ctx.font = `${fontSize}px monospace`;
-                for (let i = 0; i < rainDrops.length; i++) {
-                    const text = chars.charAt(Math.floor(Math.random() * chars.length));
-                    ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
-                    if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) rainDrops[i] = 0;
-                    rainDrops[i]++;
-                }
-            }
-            matrixInterval = setInterval(draw, 30);
-        }
-        function stopMatrix() {
-            if(matrixInterval) clearInterval(matrixInterval);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-        window.addEventListener('resize', () => {
-            if (document.body.classList.contains('hacker-mode')) { stopMatrix(); startMatrix(); }
-        });
-        document.addEventListener('DOMContentLoaded', () => { setTimeout(() => openWindow('about-window'), 500); });
-    </script>
-
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() {
-            emailjs.init("NfJ9ED-lkbltXxhGC"); // Replace with your EmailJS public key
-        })();
-
-        window.onload = function() {
-            document.getElementById('contact-form').addEventListener('submit', function(event) {
-                event.preventDefault();
-
-                emailjs.sendForm('service_bq84q0i', 'template_zjj39xo', this) // Replace with your EmailJS service and template IDs
-                    .then(function() {
-                        alert('Message sent successfully!');
-                        document.getElementById('contact-form').reset();
-                    }, function(error) {
-                        alert('Failed to send message: ' + JSON.stringify(error));
-                    });
-            });
-        };
-    </script>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <script src="assets/vendor/ScrollTrigger.min.js"></script>
+    <script src="assets/vendor/lenis.min.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 </html>
-
