@@ -237,6 +237,33 @@
         });
     }
 
+    /* ---------- Hero video: smooth hover parallax ---------- */
+    var heroFrame = document.querySelector('.hero__frame');
+    var heroVideo = document.querySelector('.hero__video');
+
+    if (heroVideo && reduceMotion) {
+        heroVideo.removeAttribute('autoplay');
+        heroVideo.pause();
+    }
+
+    if (heroFrame && heroVideo && finePointer && hasGsap && !reduceMotion) {
+        // Slight over-scale gives the video room to drift without exposing edges
+        gsap.set(heroVideo, { scale: 1.08, transformOrigin: '50% 50%' });
+        var vpx = gsap.quickTo(heroVideo, 'xPercent', { duration: 1.2, ease: 'power3.out' });
+        var vpy = gsap.quickTo(heroVideo, 'yPercent', { duration: 1.2, ease: 'power3.out' });
+        heroFrame.addEventListener('mousemove', function (e) {
+            var r = heroFrame.getBoundingClientRect();
+            var nx = (e.clientX - r.left) / r.width - 0.5;   // -0.5 .. 0.5
+            var ny = (e.clientY - r.top) / r.height - 0.5;
+            vpx(nx * -3);
+            vpy(ny * -3);
+        });
+        heroFrame.addEventListener('mouseleave', function () {
+            vpx(0);
+            vpy(0);
+        });
+    }
+
     /* ---------- Hero background: silk shader, particle fallback ---------- */
     var heroCanvas = document.querySelector('.hero__canvas');
 
@@ -334,16 +361,21 @@
         return true;
     }
 
-    var silkOk = false;
-    if (heroCanvas && !reduceMotion) {
-        try { silkOk = initSilkShader(heroCanvas); } catch (e) { silkOk = false; }
-    }
+    var fallbackBgStarted = false;
+    function initFallbackBg() {
+        if (fallbackBgStarted) return;
+        fallbackBgStarted = true;
 
-    var hctx = null;
-    if (heroCanvas && !reduceMotion && !silkOk && heroCanvas.getContext) {
-        try { hctx = heroCanvas.getContext('2d'); } catch (e) { hctx = null; }
-    }
-    if (hctx) {
+        var silkOk = false;
+        if (heroCanvas && !reduceMotion) {
+            try { silkOk = initSilkShader(heroCanvas); } catch (e) { silkOk = false; }
+        }
+
+        var hctx = null;
+        if (heroCanvas && !reduceMotion && !silkOk && heroCanvas.getContext) {
+            try { hctx = heroCanvas.getContext('2d'); } catch (e) { hctx = null; }
+        }
+        if (!hctx) return;
         var hero = heroCanvas.parentElement;
         var parts = [], W = 0, H = 0;
         var dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -430,6 +462,17 @@
                 }
             }
         })();
+    }
+
+    // The canvas is only a stand-in: start it when there is no hero video,
+    // or when the video (or its source) fails to load.
+    if (heroVideo) {
+        var heroSource = heroVideo.querySelector('source');
+        heroVideo.addEventListener('error', initFallbackBg);
+        if (heroSource) heroSource.addEventListener('error', initFallbackBg);
+        if (heroVideo.error) initFallbackBg();
+    } else {
+        initFallbackBg();
     }
 
     /* ---------- Local time (IST) ---------- */
