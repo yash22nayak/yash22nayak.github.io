@@ -100,7 +100,8 @@
     /* ---------- Hero intro + reveals ---------- */
     function heroIntro() {
         if (!hasGsap || reduceMotion) return;
-        gsap.to('.hero [data-reveal]', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.12, delay: 0.1 });
+        var heroReveals = document.querySelectorAll('.hero [data-reveal]');
+        if (heroReveals.length) gsap.to(heroReveals, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.12, delay: 0.1 });
         gsap.from('.hero__marquee-track', { yPercent: 30, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.15 });
     }
 

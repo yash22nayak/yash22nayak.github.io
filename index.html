@@ -51,10 +51,13 @@
 
     <!-- Header -->
     <header class="header">
-        <a class="header__logo" href="#top">
-            <span class="header__copy">©</span>
-            <span class="header__name"><span class="header__code">Code by </span>Yash</span>
-        </a>
+        <div class="header__left">
+            <a class="header__logo" href="#top">
+                <span class="header__copy">©</span>
+                <span class="header__name"><span class="header__code">Code by </span>Yash</span>
+            </a>
+            <p class="header__role">Software Engineer</p>
+        </div>
         <nav class="header__nav" aria-label="Primary">
             <a href="#work" class="header__link">Work</a>
             <a href="#about" class="header__link">About</a>
@@ -74,17 +77,7 @@
                 </video>
                 <div class="hero__noise" aria-hidden="true"></div>
                 <div class="hero__shade" aria-hidden="true"></div>
-                <div class="hero__location" data-reveal>
-                    <span class="hero__location-text">Located in<br>Ahmedabad, India</span>
-                    <span class="hero__globe" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></svg>
-                    </span>
-                </div>
-                <div class="hero__role" data-reveal>
-                    <svg class="hero__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 7l10 10M17 7v10H7"/></svg>
-                    <h1 class="hero__title">Software<br>Engineer</h1>
-                    <p class="hero__tagline">Laravel · Security · Automation</p>
-                </div>
+                <h1 class="sr-only">Yash Nayak — Software Engineer</h1>
                 <div class="hero__marquee" aria-hidden="true">
                     <div class="hero__marquee-track">
                         <span>Yash Nayak&nbsp;—&nbsp;</span><span>Yash Nayak&nbsp;—&nbsp;</span><span>Yash Nayak&nbsp;—&nbsp;</span><span>Yash Nayak&nbsp;—&nbsp;</span>
@@ -278,6 +271,10 @@
                 <div class="contact__meta">
                     <p class="contact__meta-label">Version</p>
                     <p>2026 © Edition</p>
+                </div>
+                <div class="contact__meta">
+                    <p class="contact__meta-label">Location</p>
+                    <p>Ahmedabad, India</p>
                 </div>
                 <div class="contact__meta">
                     <p class="contact__meta-label">Local time</p>
