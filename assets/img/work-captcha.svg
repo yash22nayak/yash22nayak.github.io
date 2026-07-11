@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480">
+  <defs>
+    <radialGradient id="g1" cx="30%" cy="25%" r="80%">
+      <stop offset="0%" stop-color="#4A5A46"/>
+      <stop offset="100%" stop-color="#1C1D20"/>
+    </radialGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="46"/></filter>
+  </defs>
+  <rect width="640" height="480" fill="#1C1D20"/>
+  <rect width="640" height="480" fill="url(#g1)" opacity="0.9"/>
+  <circle cx="500" cy="120" r="150" fill="#4A5A46" opacity="0.5" filter="url(#soft)"/>
+  <circle cx="120" cy="420" r="130" fill="#ffffff" opacity="0.06" filter="url(#soft)"/>
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.14">
+    <circle cx="320" cy="240" r="170"/>
+    <circle cx="320" cy="240" r="120"/>
+  </g>
+  <text x="48" y="290" font-family="Helvetica, Arial, sans-serif" font-size="120" font-weight="700" fill="#F4F4F2" opacity="0.95">Bot?</text>
+  <text x="50" y="330" font-family="Helvetica, Arial, sans-serif" font-size="17" letter-spacing="6" fill="#F4F4F2" opacity="0.55">OPEN SOURCE PACKAGE</text>
+  <text x="48" y="60" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#F4F4F2" opacity="0.4">©2026</text>
+</svg>

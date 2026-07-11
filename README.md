@@ -10,6 +10,7 @@ everything (fonts, GSAP, Lenis) is self-hosted in `assets/`.
 
 ```
 index.html          # all content, semantic & SEO-ready
+work/*.html         # one case-study page per featured project
 assets/css/style.css
 assets/js/main.js   # Lenis smooth scroll, GSAP reveals, magnetic buttons,
                     # cursor-following project previews, nav overlay

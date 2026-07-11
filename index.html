@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yash Nayak — Full-Stack Engineer</title>
-    <meta name="description" content="Yash Nayak is a full-stack engineer based in India, building secure and scalable web applications with Laravel, React and a background in security (VAPT).">
-    <meta property="og:title" content="Yash Nayak — Full-Stack Engineer">
-    <meta property="og:description" content="Building secure, scalable web applications. Laravel · React · Automation · VAPT.">
+    <title>Yash Nayak — Software Engineer</title>
+    <meta name="description" content="Yash Nayak is a security-focused software engineer in Ahmedabad, India — architecting fault-tolerant Laravel backends, enterprise ERPs and real-time platforms handling millions of records.">
+    <meta property="og:title" content="Yash Nayak — Software Engineer">
+    <meta property="og:description" content="Security-focused backend engineering. Laravel · System Design · VAPT · Automation.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://yash22nayak.github.io/">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231C1D20'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial,sans-serif' font-size='34' font-weight='700' fill='%23F4F4F2' text-anchor='middle'%3EY.%3C/text%3E%3C/svg%3E">
@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+
+    <!-- Page transition wipe -->
+    <div class="page-wipe" aria-hidden="true"></div>
 
     <!-- Preloader -->
     <div class="preloader" aria-hidden="true">
@@ -64,15 +67,17 @@
 
         <!-- Hero -->
         <section class="hero">
+            <canvas class="hero__canvas" aria-hidden="true"></canvas>
             <div class="hero__location" data-reveal>
-                <span class="hero__location-text">Located<br>in India</span>
+                <span class="hero__location-text">Located in<br>Ahmedabad, India</span>
                 <span class="hero__globe" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></svg>
                 </span>
             </div>
             <div class="hero__role" data-reveal>
                 <svg class="hero__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 7l10 10M17 7v10H7"/></svg>
-                <h1 class="hero__title">Full-Stack<br>Engineer</h1>
+                <h1 class="hero__title">Software<br>Engineer</h1>
+                <p class="hero__tagline">Laravel · Security · Automation</p>
             </div>
             <div class="hero__marquee" aria-hidden="true">
                 <div class="hero__marquee-track">
@@ -84,11 +89,17 @@
         <!-- Intro / manifesto -->
         <section class="intro" id="about">
             <div class="intro__grid">
-                <p class="intro__statement" data-words>Helping teams ship secure, scalable web applications — from real-time dashboards to enterprise platforms, with automation doing the boring parts.</p>
+                <p class="intro__statement" data-words>Architecting secure, fault-tolerant backend systems — from enterprise ERPs to real-time platforms that handle millions of records without breaking a sweat.</p>
                 <div class="intro__side">
-                    <p class="intro__sub" data-reveal>Laravel &amp; React specialist with a security (VAPT) background. Currently engineering at WebMavens, always building on the side.</p>
-                    <a class="circle-btn magnetic" href="#contact" data-reveal><span>About me</span></a>
+                    <p class="intro__sub" data-reveal>Security-focused engineer with 3+ years across Laravel, system design and offensive security. Running 20+ penetration tests for enterprise and government clients taught me to build software that expects to be attacked. Currently engineering at WebMavens, Ahmedabad.</p>
+                    <a class="circle-btn magnetic" href="#experience" data-reveal><span>My journey</span></a>
                 </div>
+            </div>
+            <div class="intro__stats" data-reveal>
+                <div class="stat"><p class="stat__num">3+</p><p class="stat__label">Years of engineering</p></div>
+                <div class="stat"><p class="stat__num">20+</p><p class="stat__label">VAPT security audits</p></div>
+                <div class="stat"><p class="stat__num">10+</p><p class="stat__label">Systems shipped</p></div>
+                <div class="stat"><p class="stat__num">2</p><p class="stat__label">Open-source tools</p></div>
             </div>
         </section>
 
@@ -96,52 +107,87 @@
         <section class="work" id="work">
             <p class="section-label" data-reveal>Recent Work</p>
             <ul class="work__list">
-                <li class="work__item" data-cover="assets/img/work-meet.svg" data-reveal>
-                    <div class="work__row">
-                        <div class="work__info">
-                            <h2 class="work__title">Team Meeting Manager</h2>
-                            <p class="work__tech">Chrome Extension · WebSocket · Google Meet API</p>
-                        </div>
-                        <p class="work__cat">Real-time Extension</p>
-                    </div>
-                </li>
-                <li class="work__item" data-cover="assets/img/work-mail.svg" data-reveal>
-                    <div class="work__row">
-                        <div class="work__info">
-                            <h2 class="work__title">Secure Gmail Service</h2>
-                            <p class="work__tech">Chrome Extension · Encryption · Gmail API · Laravel</p>
-                        </div>
-                        <p class="work__cat">Security</p>
-                    </div>
-                </li>
-                <li class="work__item" data-cover="assets/img/work-deploy.svg" data-reveal>
-                    <div class="work__row">
-                        <div class="work__info">
-                            <h2 class="work__title">Autonomous Deployment</h2>
-                            <p class="work__tech">CI/CD · GitHub API · Laravel Forge</p>
-                        </div>
-                        <p class="work__cat">Automation</p>
-                    </div>
-                </li>
-                <li class="work__item" data-cover="assets/img/work-stocks.svg" data-reveal>
-                    <div class="work__row">
-                        <div class="work__info">
-                            <h2 class="work__title">Stock Alert Platform</h2>
-                            <p class="work__tech">Python · Machine Learning · Stripe</p>
-                        </div>
-                        <p class="work__cat">SaaS</p>
-                    </div>
-                </li>
                 <li class="work__item" data-cover="assets/img/work-store.svg" data-reveal>
-                    <div class="work__row">
+                    <a class="work__row" href="work/enterprise-store-management.html" data-transition>
                         <div class="work__info">
-                            <h2 class="work__title">Enterprise Store Management</h2>
-                            <p class="work__tech">Laravel · Livewire · Algolia · Queues</p>
+                            <h2 class="work__title">Enterprise Store System</h2>
+                            <p class="work__tech">Laravel · Livewire · Filament · Algolia · Queues</p>
+                        </div>
+                        <p class="work__cat">Enterprise · Live</p>
+                    </a>
+                </li>
+                <li class="work__item" data-cover="assets/img/work-erp.svg" data-reveal>
+                    <a class="work__row" href="work/business-management-erp.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">Business Management ERP</h2>
+                            <p class="work__tech">Filament · Livewire · Flux UI · Alpine.js</p>
                         </div>
                         <p class="work__cat">Enterprise</p>
-                    </div>
+                    </a>
+                </li>
+                <li class="work__item" data-cover="assets/img/work-mail.svg" data-reveal>
+                    <a class="work__row" href="work/secure-gmail-service.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">SafeMailer for Gmail</h2>
+                            <p class="work__tech">Gmail API · Laravel · Encryption · Chrome Web Store</p>
+                        </div>
+                        <p class="work__cat">Open Source · Security</p>
+                    </a>
+                </li>
+                <li class="work__item" data-cover="assets/img/work-captcha.svg" data-reveal>
+                    <a class="work__row" href="work/global-recaptcha-package.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">Auto Google reCAPTCHA</h2>
+                            <p class="work__tech">Laravel · PHP · Middleware · Composer</p>
+                        </div>
+                        <p class="work__cat">Open Source</p>
+                    </a>
+                </li>
+                <li class="work__item" data-cover="assets/img/work-deploy.svg" data-reveal>
+                    <a class="work__row" href="work/autonomous-deployment.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">Autonomous Deployment</h2>
+                            <p class="work__tech">Laravel Jobs · GitHub API · Laravel Forge · Shell</p>
+                        </div>
+                        <p class="work__cat">Automation</p>
+                    </a>
+                </li>
+                <li class="work__item" data-cover="assets/img/work-stocks.svg" data-reveal>
+                    <a class="work__row" href="work/stock-alert-platform.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">Stock Alert &amp; Prediction</h2>
+                            <p class="work__tech">Laravel Reverb · Python ML · Stripe</p>
+                        </div>
+                        <p class="work__cat">SaaS</p>
+                    </a>
+                </li>
+                <li class="work__item" data-cover="assets/img/work-meet.svg" data-reveal>
+                    <a class="work__row" href="work/team-meeting-manager.html" data-transition>
+                        <div class="work__info">
+                            <h2 class="work__title">Team Meeting Manager</h2>
+                            <p class="work__tech">WebSocket · Google Meet API · Laravel</p>
+                        </div>
+                        <p class="work__cat">Real-time Extension</p>
+                    </a>
                 </li>
             </ul>
+            <div class="work__archive" data-reveal>
+                <p class="section-label">Also built</p>
+                <ul class="archive__list">
+                    <li class="archive__item">
+                        <div><h3>Learning Management Platform</h3><p>Complete LMS backend — courses, live sessions, assignment tracking, Razorpay payments.</p></div>
+                        <p class="archive__tech">Laravel · Razorpay</p>
+                    </li>
+                    <li class="archive__item">
+                        <div><h3>Restaurant Review Platform</h3><p>Web + mobile review platform with comprehensive PestPHP test coverage and a PHP Native companion app.</p></div>
+                        <p class="archive__tech">Laravel · PestPHP</p>
+                    </li>
+                    <li class="archive__item">
+                        <div><h3>Resilient Campaign CRM</h3><p>Real-time Google Sheets sync engine with queue-driven retries for third-party API failures.</p></div>
+                        <p class="archive__tech">Sheets API · Queues</p>
+                    </li>
+                </ul>
+            </div>
             <div class="work__more" data-reveal>
                 <a class="circle-btn circle-btn--light magnetic" href="https://github.com/yash22nayak" target="_blank" rel="noopener"><span>More on GitHub</span></a>
             </div>
@@ -153,28 +199,59 @@
             <p class="section-label" data-reveal>Experience</p>
             <ul class="experience__list">
                 <li class="experience__item" data-reveal>
-                    <div><h3>Laravel Developer</h3><p>WebMavens</p></div>
-                    <p class="experience__date">2024 — Present</p>
+                    <div class="experience__row">
+                        <div><h3>Software Engineer</h3><p>WebMavens — Ahmedabad</p></div>
+                        <p class="experience__date">July 2024 — Present</p>
+                    </div>
+                    <ul class="experience__points">
+                        <li>Architected and scaled backend systems for enterprise applications, optimizing complex relational databases to handle and index millions of concurrent records.</li>
+                        <li>Engineered real-time data pipelines with Laravel Queues, Reverb and WebSockets, and designed fault-tolerant REST APIs with rate limiting and strict validation.</li>
+                        <li>Pioneered AI-augmented engineering workflows, accelerating feature delivery without compromising architecture or security.</li>
+                    </ul>
                 </li>
                 <li class="experience__item" data-reveal>
-                    <div><h3>Full-Stack Developer</h3><p>Freelance</p></div>
-                    <p class="experience__date">2023 — 2024</p>
+                    <div class="experience__row">
+                        <div><h3>Freelance Backend Engineer</h3><p>Self-employed — Ahmedabad</p></div>
+                        <p class="experience__date">Nov 2023 — June 2024</p>
+                    </div>
+                    <ul class="experience__points">
+                        <li>Led end-to-end system design for multiple client platforms — scalable, normalized schemas and clean MVC architectures.</li>
+                        <li>Built CMS solutions with granular role-based access control, secure tenant isolation and custom API integrations.</li>
+                    </ul>
                 </li>
                 <li class="experience__item" data-reveal>
-                    <div><h3>Security Analyst — VAPT</h3><p>TechDefence Labs</p></div>
-                    <p class="experience__date">2023 — 2024</p>
+                    <div class="experience__row">
+                        <div><h3>Security Analyst — VAPT</h3><p>TechDefence Labs — Ahmedabad</p></div>
+                        <p class="experience__date">Nov 2023 — May 2024</p>
+                    </div>
+                    <ul class="experience__points">
+                        <li>Executed 20+ vulnerability assessments and penetration tests across web, API and network infrastructure for enterprise and government clients.</li>
+                        <li>Identified critical vulnerabilities with Burp Suite and Metasploit, delivering architectural-level remediation strategies to engineering teams.</li>
+                    </ul>
                 </li>
                 <li class="experience__item" data-reveal>
-                    <div><h3>Laravel Developer</h3><p>Glorywebs Creatives</p></div>
-                    <p class="experience__date">2023</p>
+                    <div class="experience__row">
+                        <div><h3>Laravel Developer</h3><p>Glorywebs Creatives — Ahmedabad</p></div>
+                        <p class="experience__date">Jan 2023 — Nov 2023</p>
+                    </div>
+                    <ul class="experience__points">
+                        <li>Optimized legacy backends — resolved N+1 query bottlenecks and restructured database indexing to drastically improve response times and API throughput.</li>
+                    </ul>
                 </li>
             </ul>
+            <div class="experience__edu" data-reveal>
+                <p class="section-label">Education</p>
+                <div class="experience__row">
+                    <div><h3>B.E. in Computer Engineering</h3><p>Gujarat Technological University — Ahmedabad</p></div>
+                    <p class="experience__date">2019 — 2023</p>
+                </div>
+            </div>
         </section>
 
         <!-- Skills marquee -->
         <div class="skills" aria-label="Skills">
             <div class="skills__track">
-                <span>Laravel ✦ Livewire ✦ React ✦ Node.js ✦ MySQL ✦ Tailwind CSS ✦ REST APIs ✦ CI/CD ✦ VAPT Security ✦ Automation ✦&nbsp;</span><span>Laravel ✦ Livewire ✦ React ✦ Node.js ✦ MySQL ✦ Tailwind CSS ✦ REST APIs ✦ CI/CD ✦ VAPT Security ✦ Automation ✦&nbsp;</span>
+                <span>Laravel ✦ Filament ✦ Livewire ✦ PHP ✦ MySQL ✦ REST APIs ✦ Laravel Reverb ✦ WebSockets ✦ Alpine.js ✦ Tailwind CSS ✦ Stripe ✦ Razorpay ✦ Algolia ✦ GitHub Actions ✦ CI/CD ✦ n8n ✦ OWASP Top 10 ✦ Burp Suite ✦ PestPHP ✦&nbsp;</span><span>Laravel ✦ Filament ✦ Livewire ✦ PHP ✦ MySQL ✦ REST APIs ✦ Laravel Reverb ✦ WebSockets ✦ Alpine.js ✦ Tailwind CSS ✦ Stripe ✦ Razorpay ✦ Algolia ✦ GitHub Actions ✦ CI/CD ✦ n8n ✦ OWASP Top 10 ✦ Burp Suite ✦ PestPHP ✦&nbsp;</span>
             </div>
         </div>
 
@@ -187,6 +264,7 @@
                 </div>
                 <div class="contact__pills">
                     <a class="pill magnetic" href="mailto:nayakyash2209@gmail.com">nayakyash2209@gmail.com</a>
+                    <a class="pill magnetic" href="tel:+916355672155">+91 63556 72155</a>
                 </div>
             </div>
             <div class="contact__bottom">
