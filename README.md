@@ -1,9 +1,9 @@
 # yash22nayak.github.io
 
-Personal portfolio of **Yash Nayak** — Full-Stack Engineer.
+Personal portfolio of **Yash Nayak** - Full-Stack Engineer.
 
 A single-page static site with smooth scrolling and micro-animations, inspired by
-modern Awwwards-style portfolios. No build step, no runtime CDN dependencies —
+modern Awwwards-style portfolios. No build step, no runtime CDN dependencies -
 everything (fonts, GSAP, Lenis) is self-hosted in `assets/`.
 
 ## Structure

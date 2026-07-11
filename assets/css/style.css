@@ -347,7 +347,7 @@ img { max-width: 100%; display: block; }
     padding: 0.3rem 0 0.3rem 1.4rem;
     position: relative;
 }
-.experience__points li::before { content: '—'; position: absolute; left: 0; color: rgba(28, 29, 32, 0.35); }
+.experience__points li::before { content: '-'; position: absolute; left: 0; color: rgba(28, 29, 32, 0.35); }
 .experience__edu { max-width: 1400px; margin-top: clamp(3rem, 8vh, 5rem); }
 .experience__edu .section-label { margin-bottom: 1.2rem; }
 .experience__edu .experience__row { border-top: 1px solid var(--line-dark); padding-top: 1.4rem; }
