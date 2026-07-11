@@ -237,10 +237,113 @@
         });
     }
 
-    /* ---------- Hero particle field ---------- */
+    /* ---------- Hero background: silk shader, particle fallback ---------- */
     var heroCanvas = document.querySelector('.hero__canvas');
-    if (heroCanvas && !reduceMotion && heroCanvas.getContext) {
-        var hctx = heroCanvas.getContext('2d');
+
+    function initSilkShader(canvas) {
+        var gl = canvas.getContext('webgl', { alpha: true, antialias: false });
+        if (!gl) return false;
+        var hero = canvas.parentElement;
+
+        var vsrc = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+        var fsrc = [
+            'precision highp float;',
+            'uniform vec2 u_res;uniform float u_time;uniform vec2 u_mouse;',
+            'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}',
+            'float noise(vec2 p){vec2 i=floor(p),f=fract(p);',
+            ' float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.));',
+            ' vec2 u=f*f*(3.-2.*f);',
+            ' return mix(a,b,u.x)+(c-a)*u.y*(1.-u.x)+(d-b)*u.x*u.y;}',
+            'float fbm(vec2 p){float v=0.,amp=.5;',
+            ' for(int i=0;i<5;i++){v+=amp*noise(p);p*=2.03;amp*=.5;}return v;}',
+            'void main(){',
+            ' vec2 uv=gl_FragCoord.xy/u_res;',
+            ' vec2 p=uv;p.x*=u_res.x/u_res.y;p*=1.4;',
+            ' float t=u_time*.06;',
+            ' vec2 q=vec2(fbm(p+t*.7),fbm(p+vec2(5.2,1.3)-t*.4));',
+            ' vec2 r=vec2(fbm(p+3.*q+vec2(1.7,9.2)+t*.3),fbm(p+3.*q+vec2(8.3,2.8)-t*.2));',
+            ' float f=fbm(p+3.*r+(u_mouse-.5)*.4);',
+            ' float glow=smoothstep(.3,.95,f);',
+            ' glow=pow(glow,1.6)*.24;',
+            ' glow*=smoothstep(0.,.3,uv.y);',
+            ' gl_FragColor=vec4(vec3(.957,.957,.949)*glow,glow);',
+            '}'
+        ].join('\n');
+
+        function compile(type, src) {
+            var s = gl.createShader(type);
+            gl.shaderSource(s, src); gl.compileShader(s);
+            return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
+        }
+        var vs = compile(gl.VERTEX_SHADER, vsrc);
+        var fs = compile(gl.FRAGMENT_SHADER, fsrc);
+        if (!vs || !fs) return false;
+        var prog = gl.createProgram();
+        gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return false;
+        gl.useProgram(prog);
+
+        var buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+        var loc = gl.getAttribLocation(prog, 'a');
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+        var uRes = gl.getUniformLocation(prog, 'u_res');
+        var uTime = gl.getUniformLocation(prog, 'u_time');
+        var uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+        var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        function size() {
+            canvas.width = hero.offsetWidth * dpr;
+            canvas.height = hero.offsetHeight * dpr;
+            gl.viewport(0, 0, canvas.width, canvas.height);
+        }
+        size();
+        window.addEventListener('resize', size);
+
+        var tx = 0.5, ty = 0.5, mx = 0.5, my = 0.5;
+        if (finePointer) {
+            hero.addEventListener('mousemove', function (e) {
+                var r = hero.getBoundingClientRect();
+                tx = (e.clientX - r.left) / r.width;
+                ty = 1 - (e.clientY - r.top) / r.height;
+            });
+        }
+
+        var visible = true;
+        if ('IntersectionObserver' in window) {
+            new IntersectionObserver(function (entries) {
+                visible = entries[0].isIntersecting;
+            }).observe(hero);
+        }
+
+        gl.clearColor(0, 0, 0, 0);
+        (function frame() {
+            requestAnimationFrame(frame);
+            if (!visible) return;
+            mx += (tx - mx) * 0.04;
+            my += (ty - my) * 0.04;
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.uniform2f(uRes, canvas.width, canvas.height);
+            gl.uniform1f(uTime, performance.now() * 0.001);
+            gl.uniform2f(uMouse, mx, my);
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+        })();
+        return true;
+    }
+
+    var silkOk = false;
+    if (heroCanvas && !reduceMotion) {
+        try { silkOk = initSilkShader(heroCanvas); } catch (e) { silkOk = false; }
+    }
+
+    var hctx = null;
+    if (heroCanvas && !reduceMotion && !silkOk && heroCanvas.getContext) {
+        try { hctx = heroCanvas.getContext('2d'); } catch (e) { hctx = null; }
+    }
+    if (hctx) {
         var hero = heroCanvas.parentElement;
         var parts = [], W = 0, H = 0;
         var dpr = Math.min(window.devicePixelRatio || 1, 2);
